@@ -1,0 +1,4 @@
+ScriptTemplatePath = GenerateTemplate.txt,
+SaveScriptPath = Script\,
+ScriptNameSpace = SuperHero.Config,
+FileSuffix = _Auto,
