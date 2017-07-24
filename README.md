@@ -50,3 +50,8 @@ How To Use
 代码生成
 ===
 在克隆下来的项目里包含了一个GenerateTemplate.txt文件,你可以添加内容、删除里面的方法、修改命名空间,除此之外请不要修改里面的任何东西,如果你想引入自己的框架脚本,目前还暂不支持
+
+如何填写自定义类型的数据
+===
+从第四行开始填写数据你可以先输入=UnityJson()生成出Json配置,然后将内容逐一填写即可
+![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/智能提示.png)
