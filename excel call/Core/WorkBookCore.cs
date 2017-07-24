@@ -139,7 +139,7 @@ namespace DreamExcel.Core
                 var t = table[i];
                 if (Type.GetType(table[i].Type) == null)
                 {
-                    var split = table[i].Type.Split(new[]{";"},StringSplitOptions.RemoveEmptyEntries);
+                    var split = table[i].Type.TrimStart('{').TrimEnd('}').Split(new[]{";"},StringSplitOptions.RemoveEmptyEntries);
                     var newCustomType = new GenerateConfigTemplate{Class = new GenerateClassTemplate{Name = table[i].Name + "Data"}};
                     for (int j = 0; j < split.Length; j++)
                     {

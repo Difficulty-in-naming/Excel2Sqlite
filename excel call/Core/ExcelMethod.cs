@@ -50,7 +50,8 @@ namespace DreamExcel.Core
                 Assembly assembly = result.CompiledAssembly;
                 //得到当前列的类型(如果已经生成了脚本的话类名应该是和变量名挂钩的
                 var varName = ((Range)sheet.Cells[WorkBookCore.NameRow, cell.Column]).Text;
-                var t = assembly.GetType(Config.Instance.ScriptNameSpace + "." + varName + "Data");
+                Type t = assembly.GetType(Config.Instance.ScriptNameSpace + "." + fileName + "Property");
+                t = ((PropertyInfo)t.GetProperty(varName)).PropertyType;
                 //因为Function中无法操作单元格所以等待Function结束后再清除单元格进行赋值
                 Task.Run(() =>
                 {
@@ -58,7 +59,21 @@ namespace DreamExcel.Core
                     {
                         IsOver = false;
                     }
-                    cell.Value = JsonConvert.SerializeObject(Activator.CreateInstance(t), new JsonSerializerSettings {ContractResolver = new SpecialContractResolver()});
+                    try
+                    {
+                        if (!t.IsArray)
+                            cell.Value = JsonConvert.SerializeObject(Activator.CreateInstance(t), new JsonSerializerSettings {ContractResolver = new SpecialContractResolver()});
+                        else
+                        {
+                            var arrayInstance = Array.CreateInstance(t.GetElementType(), 1);
+                            arrayInstance.SetValue(Activator.CreateInstance(t.GetElementType()),0);
+                            cell.Value = JsonConvert.SerializeObject(arrayInstance, new JsonSerializerSettings { ContractResolver = new SpecialContractResolver() });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.ToString());
+                    }
                 });
                 return IsOver = true;
             }
