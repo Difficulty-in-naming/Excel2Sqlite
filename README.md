@@ -34,9 +34,12 @@ How To Use
 
 如何在Excel中使用自定义类型
 ===
-在第三行脚本类型中你可以这样定义Id[int];Name[string]
+在第三行脚本类型中你可以这样定义**Id[int];Name[string]**
 ![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型.png)
-如果你希望定义自定义类型数组你可以使用{Id[int];Name[string}来进行定义
+<br />
+<br />
+如果你希望定义自定义类型数组你可以使用**{Id[int];Name[string}**来进行定义
+<br />
 ![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型数组.png)
 
 基础配置
