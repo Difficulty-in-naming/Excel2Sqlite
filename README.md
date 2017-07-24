@@ -19,6 +19,7 @@ Environment
 Get Started
 ===
 - Clone Git 仓库
+- 手动添加克隆项目下的ScriptGenerate.dll引用
 - 编译脚本
 - 打开生成目录下的TestExcel_Auto.xlsx或者新建一个Excel文件
 - 按下快捷键Alt+t,i打开面板选择浏览加入生成目录下的两个.xll文件
@@ -35,3 +36,13 @@ How To Use
 ===
 在第三行脚本类型中你可以这样定义Id[int];Name[string]
 ![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型.png)
+如果你希望定义自定义类型数组你可以使用{Id[int];Name[string}来进行定义
+![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型数组.png)
+
+基础配置
+===
+在克隆下来的项目里包含了一个Config.txt文件,你可以在里面修改相关的参数达到修改导出内容的目的
+
+代码生成
+===
+在克隆下来的项目里包含了一个GenerateTemplate.txt文件,你可以添加内容、删除里面的方法、修改命名空间,除此之外请不要修改里面的任何东西,如果你想引入自己的框架脚本,目前还暂不支持
