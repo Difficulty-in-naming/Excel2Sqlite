@@ -38,7 +38,7 @@ How To Use
 ![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型.png)
 <br />
 <br />
-如果你希望定义自定义类型数组你可以使用**{Id[int];Name[string}**来进行定义
+如果你希望定义自定义类型数组你可以使用 **{Id[int];Name[string}** 来进行定义
 <br />
 ![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型数组.png)
 
