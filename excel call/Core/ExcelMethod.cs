@@ -37,6 +37,10 @@ namespace DreamExcel.Core
                 Worksheet sheet = book.ActiveSheet;
                 var cell = (Range)app.Selection;
                 var fileName = Path.GetFileNameWithoutExtension(book.Name).Replace(Config.Instance.FileSuffix,"");
+                if (!File.Exists(Config.Instance.SaveScriptPath + fileName + ".cs"))
+                {
+                    throw  new ExcelException(Config.Instance.SaveScriptPath + fileName + ".cs" + "\n" + "不存在此文件,请先保存一次Excel文件生成该脚本后使用此功能");
+                }
                 var result = a.CompileAssemblyFromFile(cp, Config.Instance.SaveScriptPath + fileName + ".cs");
                 if (result.Errors.HasErrors)
                 {
