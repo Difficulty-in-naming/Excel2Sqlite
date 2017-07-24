@@ -34,4 +34,4 @@ How To Use
 如何在Excel中使用自定义类型
 ===
 在第三行脚本类型中你可以这样定义Id[int];Name[string]
-![index](https://github.com/pk27602017/DreamSerialize/raw/master/Image/自定义类型.png)
+![index](https://github.com/pk27602017/Excel2Sqlite/raw/master/Image/自定义类型.png)
