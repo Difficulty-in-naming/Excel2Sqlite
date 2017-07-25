@@ -1,5 +1,3 @@
-/*模板脚本的存放路径(xll的相对路径)*/
-ScriptTemplatePath = GenerateTemplate.txt,
 /*生成后的脚本存放的位置,如果填写盘符则为绝对路径不填写则为当前活动表格的相对路径*/
 SaveScriptPath = F:\SuperHero\Assets\Scripts\Config\,
 /*生成后的数据库存放位置,如果填写盘符则为绝对路径不填写则为当前活动表格的相对路径*/

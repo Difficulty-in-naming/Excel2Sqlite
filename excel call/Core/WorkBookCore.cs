@@ -245,7 +245,6 @@ namespace DreamExcel.Core
 
         public void AutoOpen()
         {
-            Config.mInstance = null;
             App.WorkbookBeforeSave += Workbook_BeforeSave;
         }
 

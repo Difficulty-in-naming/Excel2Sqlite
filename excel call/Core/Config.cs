@@ -6,26 +6,28 @@ namespace DreamExcel.Core
 {
     public class Config
     {
-        //不知道为什么mInstance默认就有值了.
-        internal static Config mInstance;
         public static Config Instance
         {
             get
             {
-                if (mInstance != null)
-                    return mInstance;
-                mInstance = new Config();
-                var content = File.ReadAllText(CurrentPath + "/Config.txt");
+                var mInstance = new Config();
+                //如果工作目录下存在配置文件则读取工作目录下的配置
+                var configPath = WorkBookCore.App.ActiveWorkbook.Path + "/Config.txt";
+                string content;
+                if (File.Exists(configPath))
+                {
+                    content = File.ReadAllText(configPath);
+                }
+                else
+                {
+                    content = File.ReadAllText(CurrentPath + "/Config.txt");
+                }
                 content = Regex.Replace(content, @"\/\*((?:[^*]|(?:\*(?=[^\/])))*)\*\/", "");
                 content = content.Replace("\n", "").Replace("\r","");
                 var split = content.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
                 {
-                    if (split[i].StartsWith(nameof(ScriptTemplatePath)))
-                    {
-                        mInstance.ScriptTemplatePath = CurrentPath + "\\" + GetValue(split[i]);
-                    }
-                    else if (split[i].StartsWith(nameof(SaveScriptPath)))
+                    if (split[i].StartsWith(nameof(SaveScriptPath)))
                     {
                         mInstance.SaveScriptPath = GetValue(split[i]);
                     }
@@ -52,7 +54,23 @@ namespace DreamExcel.Core
         }
 
         private static string CurrentPath { get { return AppDomain.CurrentDomain.BaseDirectory; } }
-        public string ScriptTemplatePath { get; private set; }
+
+        public string ScriptTemplatePath
+        {
+            get
+            {
+                var configPath = WorkBookCore.App.ActiveWorkbook.Path + "/GenerateTemplate.txt";
+                if (File.Exists(configPath))
+                {
+                    return configPath;
+                }
+                else
+                {
+                    return CurrentPath + "/GenerateTemplate.txt";
+                }
+            }
+        }
+
         private string mSaveScriptPath;
         public string SaveScriptPath
         {
