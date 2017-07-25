@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
@@ -96,7 +96,7 @@ namespace DreamExcel.Core
                 return;
             var activeSheet = (Worksheet) wb.ActiveSheet;
             var fileName = Path.GetFileNameWithoutExtension(wb.Name).Replace(Config.Instance.FileSuffix, "");
-            var dbDirPath = wb.Path + "/sqlite/";
+            var dbDirPath = Config.Instance.SaveDbPath;
             var dbFilePath = dbDirPath + fileName + ".db";
             if (!Directory.Exists(dbDirPath))
             {
@@ -246,15 +246,15 @@ namespace DreamExcel.Core
                         }
                         sb.Remove(sb.Length - 1, 1);
                         sb.Append(") values (");
-                        for (var index = 0; index < writeInfo.Length; index++)
+                        for (var index = 0; index < table.Count; index++)
                         {
-                            var node = writeInfo[index];
-                            if (node is string)
-                                sb.Append("'" + node + "'" + ",");
-                            else if (node == null)
-                                sb.Append("'" + "'" + ",");
+                            var node = table[index];
+                            var bindName = "@" + node.Name;
+                            sb.Append(bindName + ",");
+                            if (writeInfo.Length > index)
+                                sql.Bind(bindName, writeInfo[index]);
                             else
-                                sb.Append(node + ",");
+                                sql.Bind(bindName, null);
                         }
                         sb.Remove(sb.Length - 1, 1);
                         sb.Append(")");
@@ -281,8 +281,6 @@ namespace DreamExcel.Core
         public void AutoClose()
         {
         }
-
-        
     }
 }
 

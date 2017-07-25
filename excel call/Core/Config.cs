@@ -27,6 +27,10 @@ namespace DreamExcel.Core
                     {
                         mInstance.SaveScriptPath = GetValue(split[i]);
                     }
+                    else if (split[i].StartsWith(nameof(SaveDbPath)))
+                    {
+                        mInstance.SaveDbPath = GetValue(split[i]);
+                    }
                     else if (split[i].StartsWith(nameof(ScriptNameSpace)))
                     {
                         mInstance.ScriptNameSpace = GetValue(split[i]);
@@ -50,11 +54,32 @@ namespace DreamExcel.Core
         private string mSaveScriptPath;
         public string SaveScriptPath
         {
-            get { return WorkBookCore.App.ActiveWorkbook.Path + "\\" + mSaveScriptPath; }
+            get
+            {
+                if (mSaveScriptPath.Contains(":")) //盘符标志
+                {
+                    return mSaveScriptPath;
+                }
+                return WorkBookCore.App.ActiveWorkbook.Path + "\\" + mSaveScriptPath;
+            }
             private set { mSaveScriptPath = value; }
         }
 
         public string ScriptNameSpace { get; private set; }
         public string FileSuffix { get; private set; }
+        private string mSaveDbPath;
+
+        public string SaveDbPath
+        {
+            get
+            {
+                if (mSaveDbPath.Contains(":")) //盘符标志
+                {
+                    return mSaveDbPath;
+                }
+                return WorkBookCore.App.ActiveWorkbook.Path + "\\" + mSaveDbPath;
+            }
+            set { mSaveDbPath = value; }
+        }
     }
 }

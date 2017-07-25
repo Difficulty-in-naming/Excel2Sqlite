@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2009-2012 Krueger Systems, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 #if USE_CSHARP_SQLITE
@@ -3042,15 +3043,14 @@ namespace SQLite4Unity3d
 		[DllImport ("sqlite3", EntryPoint = "sqlite3_prepare_v2", CallingConvention = CallingConvention.Cdecl)]
 		public static extern Result Prepare2 (IntPtr db, byte[] queryBytes, int numBytes, out IntPtr stmt, IntPtr pzTail);
 #endif
-
-		public static IntPtr Prepare2 (IntPtr db, string query)
+        public static IntPtr Prepare2 (IntPtr db, string query)
 		{
 			IntPtr stmt;
 #if NETFX_CORE
 			byte[] queryBytes = System.Text.UTF8Encoding.UTF8.GetBytes (query);
 			var r = Prepare2 (db, queryBytes, queryBytes.Length, out stmt, IntPtr.Zero);
 #else
-			var r = Prepare2 (db, query, System.Text.UTF8Encoding.UTF8.GetByteCount (query), out stmt, IntPtr.Zero);
+            var r = Prepare2 (db, query, Encoding.UTF8.GetBytes(query).Length, out stmt, IntPtr.Zero);
 #endif
 			if (r != Result.OK) {
 

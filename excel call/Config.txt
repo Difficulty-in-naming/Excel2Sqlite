@@ -1,4 +1,5 @@
 ScriptTemplatePath = GenerateTemplate.txt,
-SaveScriptPath = Script\,
+SaveScriptPath = F:\SuperHero\123\Script\,
+SaveDbPath = F:\SuperHero\123\AssetBundle\,
 ScriptNameSpace = SuperHero.Config,
 FileSuffix = _Auto,
