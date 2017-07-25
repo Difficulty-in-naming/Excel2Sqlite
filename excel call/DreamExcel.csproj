@@ -45,10 +45,6 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="ScriptGenerate, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\MyProject\ScriptGenerate\ScriptGenerate\bin\Release\ScriptGenerate.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -102,6 +98,12 @@
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="F:\MyProject\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj">
+      <Project>{3f45d91b-6162-4431-b0da-7f3645ebae07}</Project>
+      <Name>ScriptGenerate</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

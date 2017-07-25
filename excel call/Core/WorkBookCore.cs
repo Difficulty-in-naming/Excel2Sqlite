@@ -128,24 +128,31 @@ namespace DreamExcel.Core
             {
                 throw new ExcelException("表格中不存在关键Key,你需要新增一列变量名为" + Key + "的变量作为键值");
             }
-            //生成C#脚本
-            var customClass = new List<GenerateConfigTemplate>();
-            var coreClass = new GenerateConfigTemplate {Class = new GenerateClassTemplate{Name = fileName,Type = keyType}};
-            for (int i = 0; i < table.Count; i++)
+            try
             {
-                var t = table[i];
-                if (Type.GetType(table[i].Type) == null)
+                //生成C#脚本
+                var customClass = new List<GenerateConfigTemplate>();
+                var coreClass = new GenerateConfigTemplate {Class = new GenerateClassTemplate {Name = fileName, Type = keyType}};
+                for (int i = 0; i < table.Count; i++)
                 {
-                    var newCustomType = TableAnalyzer.GenerateCustomClass(t.Type,t.Name);
-                    coreClass.Add(new GeneratePropertiesTemplate { Name = t.Name, Type = newCustomType.Class.Name + (t.Type.StartsWith("{") ? "[]" : "") });
-                    customClass.Add(newCustomType);
+                    var t = table[i];
+                    if (Type.GetType(table[i].Type) == null)
+                    {
+                        var newCustomType = TableAnalyzer.GenerateCustomClass(t.Type, t.Name);
+                        coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = newCustomType.Class.Name + (t.Type.StartsWith("{") ? "[]" : "")});
+                        customClass.Add(newCustomType);
+                    }
+                    else
+                    {
+                        coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type});
+                    }
                 }
-                else
-                {
-                    coreClass.Add(new GeneratePropertiesTemplate{Name = t.Name,Type = t.Type});
-                }
+                CodeGenerate.Start(customClass, coreClass, fileName);
             }
-            CodeGenerate.Start(customClass,coreClass,fileName);
+            catch (Exception e)
+            {
+                throw new ExcelException("生成脚本失败\n" + e);
+            }
             using (var conn = new SQLiteConnection(dbFilePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
             {
                 try

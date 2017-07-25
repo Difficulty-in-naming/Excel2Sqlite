@@ -19,23 +19,28 @@ namespace DreamExcel.Core
                         var custom = customClass[i];
                         g.SetReplace("Class", custom.Class.Name);
                         g.SetReplace("Attribute", custom.Class.Attribute);
-                        g.BeginGroup("NestedField");
                         var properties = custom.Properties;
-                        for (var j = 0; j < properties.Count; j++)
+                        if (g.BeginGroup("NestedField"))
                         {
-                            g.SetReplace("Name", properties[j].Name);
-                            g.SetReplace("Type", properties[j].Type);
-                            g.Apply();
+                            for (var j = 0; j < properties.Count; j++)
+                            {
+                                g.SetReplace("Name", properties[j].Name);
+                                g.SetReplace("Type", properties[j].Type);
+                                g.Apply();
+                            }
+                            g.EndGroup();
                         }
-                        g.EndGroup();
-                        g.BeginGroup("NestedProperty");
-                        for (var j = 0; j < properties.Count; j++)
+
+                        if (g.BeginGroup("NestedProperty"))
                         {
-                            g.SetReplace("Name", properties[j].Name);
-                            g.SetReplace("Type", properties[j].Type);
-                            g.Apply();
+                            for (var j = 0; j < properties.Count; j++)
+                            {
+                                g.SetReplace("Name", properties[j].Name);
+                                g.SetReplace("Type", properties[j].Type);
+                                g.Apply();
+                            }
+                            g.EndGroup();
                         }
-                        g.EndGroup();
                         g.Apply();
                     }
                 }
@@ -44,23 +49,28 @@ namespace DreamExcel.Core
                     g.SetReplace("Class", core.Class.Name);
                     g.SetReplace("Attribute", core.Class.Attribute);
                     g.SetReplace("KeyType", core.Class.Type);
-                    g.BeginGroup("Field");
                     var properties = core.Properties;
-                    for (var i = 0; i < properties.Count; i++)
+                    if (g.BeginGroup("Field"))
                     {
-                        g.SetReplace("Name", properties[i].Name);
-                        g.SetReplace("Type", properties[i].Type);
-                        g.Apply();
+                        for (var i = 0; i < properties.Count; i++)
+                        {
+                            g.SetReplace("Name", properties[i].Name);
+                            g.SetReplace("Type", properties[i].Type);
+                            g.Apply();
+                        }
+                        g.EndGroup();
                     }
-                    g.EndGroup();
-                    g.BeginGroup("Property");
-                    for (var i = 0; i < properties.Count; i++)
+
+                    if (g.BeginGroup("Property"))
                     {
-                        g.SetReplace("Name", properties[i].Name);
-                        g.SetReplace("Type", properties[i].Type);
-                        g.Apply();
+                        for (var i = 0; i < properties.Count; i++)
+                        {
+                            g.SetReplace("Name", properties[i].Name);
+                            g.SetReplace("Type", properties[i].Type);
+                            g.Apply();
+                        }
+                        g.EndGroup();
                     }
-                    g.EndGroup();
                     g.Apply();
                 }
                 if (info.PlaceHolder == "ScriptableObject")

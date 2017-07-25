@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamExcel", "excel call\DreamExcel.csproj", "{84E99079-C450-4C56-A3FE-3880A52067BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptGenerate", "F:\MyProject\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj", "{3F45D91B-6162-4431-B0DA-7F3645EBAE07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{84E99079-C450-4C56-A3FE-3880A52067BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84E99079-C450-4C56-A3FE-3880A52067BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84E99079-C450-4C56-A3FE-3880A52067BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F45D91B-6162-4431-B0DA-7F3645EBAE07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F45D91B-6162-4431-B0DA-7F3645EBAE07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F45D91B-6162-4431-B0DA-7F3645EBAE07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F45D91B-6162-4431-B0DA-7F3645EBAE07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
