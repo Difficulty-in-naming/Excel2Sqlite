@@ -45,14 +45,12 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="ScriptGenerate, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F:\MyProject\ScriptGenerate\ScriptGenerate\bin\Release\ScriptGenerate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -67,7 +65,7 @@
     <Compile Include="Core\ExcelMethod.cs" />
     <Compile Include="Core\CodeGenerate.cs" />
     <Compile Include="Core\Config.cs" />
-    <Compile Include="Core\JsonUtility.cs" />
+    <Compile Include="Core\JsonGenerate.cs" />
     <Compile Include="Core\SQLite.cs" />
     <Compile Include="Core\TableAnalyzer.cs" />
     <Compile Include="Core\TableStruct.cs" />

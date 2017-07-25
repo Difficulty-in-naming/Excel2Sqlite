@@ -32,7 +32,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
 #if USE_CSHARP_SQLITE
 using Sqlite3 = Community.CsharpSqlite.Sqlite3;
 using Sqlite3DatabaseHandle = Community.CsharpSqlite.Sqlite3.sqlite3;
@@ -2338,9 +2337,8 @@ namespace SQLite4Unity3d
 				  return new Guid(text);
 				} else
 				{
-				    var bytes = SQLite3.ColumnString(stmt, index);
-				    return JsonConvert.DeserializeObject(bytes);
-				    //throw new NotSupportedException ("Don't know how to read " + clrType);
+				    //var bytes = SQLite3.ColumnString(stmt, index);
+				    throw new NotSupportedException ("Don't know how to read " + clrType);
 				}
 			}
 		}

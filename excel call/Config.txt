@@ -8,5 +8,3 @@ SaveDbPath = F:\SuperHero\Assets\StreamingAssets\,
 ScriptNameSpace = SuperHero.Config,
 /*文件后缀名带有该后缀名的可以享有该插件的所有能力*/
 FileSuffix = _Auto,
-/*添加脚本引用,不填可能会导致脚本无法生成json*/
-AddRef = sqlite3.dll

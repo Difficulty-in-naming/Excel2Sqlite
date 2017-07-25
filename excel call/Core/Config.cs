@@ -41,10 +41,6 @@ namespace DreamExcel.Core
                     {
                         mInstance.FileSuffix = GetValue(split[i]);
                     }
-                    else if (split[i].StartsWith(nameof(AddRef)))
-                    {
-                        mInstance.AddRef = GetValue(split[i]).Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
-                    }
                 }
                 return mInstance;
             }
@@ -87,7 +83,5 @@ namespace DreamExcel.Core
             }
             set { mSaveDbPath = value; }
         }
-
-        public string[] AddRef;
     }
 }

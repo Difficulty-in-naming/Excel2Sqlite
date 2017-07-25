@@ -1,14 +1,10 @@
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using ExcelDna.Integration;
 using Microsoft.Office.Interop.Excel;
-using Newtonsoft.Json;
 using ScriptGenerate;
 using SQLite4Unity3d;
 using Application = Microsoft.Office.Interop.Excel.Application;
@@ -140,24 +136,8 @@ namespace DreamExcel.Core
                 var t = table[i];
                 if (Type.GetType(table[i].Type) == null)
                 {
-                    var split = table[i].Type.TrimStart('{').TrimEnd('}').Split(new[]{";"},StringSplitOptions.RemoveEmptyEntries);
-                    var newCustomType = new GenerateConfigTemplate{Class = new GenerateClassTemplate{Name = table[i].Name + "Data"}};
-                    for (int j = 0; j < split.Length; j++)
-                    {
-                        var content = split[j];
-                        string name = "", type = "";
-                        var indexOfType = content.IndexOf("[");
-                        name = content.Substring(0, indexOfType);
-                        type = content.Replace(name, "").TrimEnd(']').TrimStart('[');
-                        if (TableAnalyzer.CheckType(type))
-                        {
-                            throw new ExcelException("表名:" + name + "中的类型定义有误,不能使用int,int[],string,string[],bool,bool[],float,float[]以外的类型" +
-                                                "\n如果需要定义扩展类型请使用这种格式:Name[string];Id[int]" +
-                                                "\n如果需要定义扩展类型数组请使用这种格式:{Name[string];Id[int]}");
-                        }
-                        newCustomType.Add(new GeneratePropertiesTemplate {Name = name, Type = type});
-                    }
-                    coreClass.Add(new GeneratePropertiesTemplate { Name = table[i].Name, Type = newCustomType.Class.Name + (table[i].Type.StartsWith("{") ? "[]" : "") });
+                    var newCustomType = TableAnalyzer.GenerateCustomClass(t.Type,t.Name);
+                    coreClass.Add(new GeneratePropertiesTemplate { Name = t.Name, Type = newCustomType.Class.Name + (t.Type.StartsWith("{") ? "[]" : "") });
                     customClass.Add(newCustomType);
                 }
                 else
@@ -217,15 +197,11 @@ namespace DreamExcel.Core
                                 {
                                     if (FullTypeSqliteMapping.ContainsKey(property.Type)) //常规类型可以使用这种方法直接转换
                                     {
-                                        if (!property.IsArray)
-                                        {
-                                            var attr = TableAnalyzer.SplitData(cell);
-                                            writeInfo[n - 1] = attr[0];
-                                        }
+                                        var attr = TableAnalyzer.SplitData(cell);
+                                        if (property.Type == "System.Boolean")
+                                            writeInfo[n - 1] = attr[0].ToUpper() == "TRUE" ? 0 : 1;
                                         else
-                                        {
-                                            writeInfo[n - 1] = JsonConvert.SerializeObject(ValueConverter[property.Type](TableAnalyzer.SplitData(cell)));
-                                        }
+                                            writeInfo[n - 1] = attr[0];
                                     }
                                     else
                                     {
