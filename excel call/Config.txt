@@ -1,5 +1,12 @@
+/*模板脚本的存放路径(xll的相对路径)*/
 ScriptTemplatePath = GenerateTemplate.txt,
-SaveScriptPath = F:\SuperHero\123\Script\,
-SaveDbPath = F:\SuperHero\123\AssetBundle\,
+/*生成后的脚本存放的位置,如果填写盘符则为绝对路径不填写则为当前活动表格的相对路径*/
+SaveScriptPath = F:\SuperHero\Assets\Scripts\Config\,
+/*生成后的数据库存放位置,如果填写盘符则为绝对路径不填写则为当前活动表格的相对路径*/
+SaveDbPath = F:\SuperHero\Assets\StreamingAssets\,
+/*生成的脚本的命名空间*/
 ScriptNameSpace = SuperHero.Config,
+/*文件后缀名带有该后缀名的可以享有该插件的所有能力*/
 FileSuffix = _Auto,
+/*添加脚本引用,不填可能会导致脚本无法生成json*/
+AddRef = sqlite3.dll

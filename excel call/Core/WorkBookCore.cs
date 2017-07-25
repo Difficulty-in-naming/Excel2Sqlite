@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -172,7 +173,7 @@ namespace DreamExcel.Core
                     StringBuilder sb = new StringBuilder();
                     var tableName = fileName;
                     SQLiteCommand sql = new SQLiteCommand(conn);
-                    sql.CommandText = "PRAGMA synchronous=OFF";
+                    sql.CommandText = "PRAGMA synchronous = OFF";
                     sql.ExecuteNonQuery();
                     //创建关键Key写入表头
                     sb.Append("create table if not exists " + tableName + " (" + Key + " " + FullTypeSqliteMapping[keyType] + " PRIMARY KEY autoincrement, ");
@@ -206,13 +207,13 @@ namespace DreamExcel.Core
                     object[] writeInfo = new object[columnCount];
                     for (int i = StartLine; i <= rowCount; i++)
                     {
-                        for (var n = 1; n < columnCount + 1; n++)
+                        for (var n = 1; n <= columnCount; n++)
                         {
                             try
                             {
                                 var property = table[n - 1];
                                 string cell = Convert.ToString(cells[i, n]);
-                                if (table.Count > n)
+                                if (table.Count >= n)
                                 {
                                     if (FullTypeSqliteMapping.ContainsKey(property.Type)) //常规类型可以使用这种方法直接转换
                                     {
@@ -248,19 +249,12 @@ namespace DreamExcel.Core
                         sb.Append(") values (");
                         for (var index = 0; index < table.Count; index++)
                         {
-                            var node = table[index];
-                            var bindName = "@" + node.Name;
-                            sb.Append(bindName + ",");
-                            if (writeInfo.Length > index)
-                                sql.Bind(bindName, writeInfo[index]);
-                            else
-                                sql.Bind(bindName, null);
+                            sb.Append("?,");
                         }
                         sb.Remove(sb.Length - 1, 1);
                         sb.Append(")");
-                        sql.CommandText = sb.ToString();
+                        conn.CreateCommand(sb.ToString(), writeInfo).ExecuteNonQuery();
                         sb.Clear();
-                        sql.ExecuteNonQuery();
                     }
                     conn.Commit();
                 }
@@ -275,6 +269,7 @@ namespace DreamExcel.Core
 
         public void AutoOpen()
         {
+            Config.mInstance = null;
             App.WorkbookBeforeSave += Workbook_BeforeSave;
         }
 

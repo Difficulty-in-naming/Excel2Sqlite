@@ -1,20 +1,22 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace DreamExcel.Core
 {
     public class Config
     {
         //不知道为什么mInstance默认就有值了.
-        private static Config mInstance;
+        internal static Config mInstance;
         public static Config Instance
         {
             get
             {
-/*                if (mInstance != null)
-                    return mInstance;*/
+                if (mInstance != null)
+                    return mInstance;
                 mInstance = new Config();
                 var content = File.ReadAllText(CurrentPath + "/Config.txt");
+                content = Regex.Replace(content, @"\/\*((?:[^*]|(?:\*(?=[^\/])))*)\*\/", "");
                 content = content.Replace("\n", "").Replace("\r","");
                 var split = content.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
@@ -38,6 +40,10 @@ namespace DreamExcel.Core
                     else if (split[i].StartsWith(nameof(FileSuffix)))
                     {
                         mInstance.FileSuffix = GetValue(split[i]);
+                    }
+                    else if (split[i].StartsWith(nameof(AddRef)))
+                    {
+                        mInstance.AddRef = GetValue(split[i]).Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
                     }
                 }
                 return mInstance;
@@ -81,5 +87,7 @@ namespace DreamExcel.Core
             }
             set { mSaveDbPath = value; }
         }
+
+        public string[] AddRef;
     }
 }
