@@ -14,24 +14,24 @@ namespace DreamExcel.Core
     public class WorkBookCore: IExcelAddIn
     {
         /// <summary>
-        /// ç»‘å®š
+        /// °ó¶¨
         /// </summary>
         public static Application App = (Application)ExcelDnaUtil.Application;
         /// <summary>
-        /// ç¬¬Xè¡Œå¼€å§‹æ‰æ˜¯æ­£å¼æ•°æ®
+        /// µÚXĞĞ¿ªÊ¼²ÅÊÇÕıÊ½Êı¾İ
         /// </summary>
         private const int StartLine = 4;
         /// <summary>
-        ///     å…³é”®Keyå€¼,è¿™ä¸ªå€¼åœ¨Excelè¡¨é‡Œé¢å¿…é¡»å­˜åœ¨
+        ///     ¹Ø¼üKeyÖµ,Õâ¸öÖµÔÚExcel±íÀïÃæ±ØĞë´æÔÚ
         /// </summary>
         private const string Key = "Id";
 
         /// <summary>
-        /// ç±»å‹çš„æ‰€åœ¨è¡Œ
+        /// ÀàĞÍµÄËùÔÚĞĞ
         /// </summary>
         public const int TypeRow = 3;
         /// <summary>
-        /// åç§°çš„æ‰€åœ¨è¡Œ
+        /// Ãû³ÆµÄËùÔÚĞĞ
         /// </summary>
         public const int NameRow = 2;
         internal static Dictionary<string, string> TypeConverter = new Dictionary<string, string>
@@ -45,7 +45,7 @@ namespace DreamExcel.Core
             {"long[]", "System.Int64[]"},
             {"bool[]", "System.Boolean[]"},
             {"string[]", "System.String[]"},
-            {"float[]", "System.Float[]"}
+            {"float[]", "System.Single[]"}
         };
 
         internal static Dictionary<string, Func<string[], object>> ValueConverter = new Dictionary<string, Func<string[], object>>
@@ -59,7 +59,7 @@ namespace DreamExcel.Core
             {"System.Int64[]", str => str.Length > 0 ? Array.ConvertAll(str, long.Parse) : new long[0]},
             {"System.Boolean[]", str => str.Length > 0 ? Array.ConvertAll(str, bool.Parse) : new bool[0]},
             {"System.String[]", str => str.Length > 0 ? str : new string[0]},
-            {"System.Float[]", str => str.Length > 0 ? Array.ConvertAll(str, float.Parse) : new float[0]}
+            {"System.Single[]", str => str.Length > 0 ? Array.ConvertAll(str, float.Parse) : new float[0]}
         };
 
         internal static Dictionary<string, string> SqliteMapping = new Dictionary<string, string>
@@ -84,8 +84,23 @@ namespace DreamExcel.Core
             {"System.Int64[]","TEXT"},
             {"System.Boolean[]","TEXT"},
             {"System.String[]","TEXT"},
-            {"System.Float[]","TEXT"}
+            {"System.Single[]","TEXT"}
         };
+
+        public class Localization
+        {
+            /// <summary>
+            /// Í¨¹ıÎ¨Ò»ID»ñÈ¡Êı¾İ
+            /// </summary>
+            public System.String Id;
+
+            public System.String Chinese;
+            public System.String English;
+            public System.String Japanese;
+            public System.String Korean;
+            public System.String French;
+        }
+
         private void Workbook_BeforeSave(Workbook wb,bool b, ref bool r)
         {
             var isSpWorkBook = Path.GetFileNameWithoutExtension(wb.Name).EndsWith(Config.Instance.FileSuffix);
@@ -108,8 +123,13 @@ namespace DreamExcel.Core
             object[,] cells = usedRange.Value2;
             for (var index = 1; index < columnCount + 1; index++)
             {
-                //ä»1å¼€å§‹,ç¬¬0è¡Œæ˜¯ç­–åˆ’ç”¨æ¥å†™å¤‡æ³¨çš„åœ°æ–¹ç¬¬1è¡Œä¸ºç¨‹åºä½¿ç”¨çš„å˜é‡å,ç¬¬2è¡Œä¸ºå˜é‡ç±»å‹
+                //´Ó1¿ªÊ¼,µÚ0ĞĞÊÇ²ß»®ÓÃÀ´Ğ´±¸×¢µÄµØ·½µÚ1ĞĞÎª³ÌĞòÊ¹ÓÃµÄ±äÁ¿Ãû,µÚ2ĞĞÎª±äÁ¿ÀàĞÍ
                 string t1 = Convert.ToString(cells[NameRow, index]);
+                if (string.IsNullOrWhiteSpace(t1))
+                {
+                    var cell = ((Range)usedRange.Cells[NameRow, index]).Address;
+                    throw new ExcelException("µ¥Ôª¸ñ:" + cell + "Ãû³Æ²»ÄÜÎª¿Õ");
+                }
                 string type = Convert.ToString(cells[TypeRow, index]);
                 if (TypeConverter.ContainsKey(type))
                     type = TypeConverter[type];
@@ -119,18 +139,18 @@ namespace DreamExcel.Core
                     keyType = type;
                     if (keyType!="System.Int32" && keyType != "System.String")
                     {
-                        throw new ExcelException("è¡¨IDçš„ç±»å‹ä¸æ”¯æŒ,å¯ä½¿ç”¨çš„ç±»å‹å¿…é¡»ä¸º int,string");
+                        throw new ExcelException("±íIDµÄÀàĞÍ²»Ö§³Ö,¿ÉÊ¹ÓÃµÄÀàĞÍ±ØĞëÎª int,string");
                     }
                 }
                 table.Add(new TableStruct(t1, type));
             }
             if (!haveKey)
             {
-                throw new ExcelException("è¡¨æ ¼ä¸­ä¸å­˜åœ¨å…³é”®Key,ä½ éœ€è¦æ–°å¢ä¸€åˆ—å˜é‡åä¸º" + Key + "çš„å˜é‡ä½œä¸ºé”®å€¼");
+                throw new ExcelException("±í¸ñÖĞ²»´æÔÚ¹Ø¼üKey,ÄãĞèÒªĞÂÔöÒ»ÁĞ±äÁ¿ÃûÎª" + Key + "µÄ±äÁ¿×÷Îª¼üÖµ");
             }
             try
             {
-                //ç”ŸæˆC#è„šæœ¬
+                //Éú³ÉC#½Å±¾
                 var customClass = new List<GenerateConfigTemplate>();
                 var coreClass = new GenerateConfigTemplate {Class = new GenerateClassTemplate {Name = fileName, Type = keyType}};
                 for (int i = 0; i < table.Count; i++)
@@ -151,7 +171,11 @@ namespace DreamExcel.Core
             }
             catch (Exception e)
             {
-                throw new ExcelException("ç”Ÿæˆè„šæœ¬å¤±è´¥\n" + e);
+                throw new ExcelException("Éú³É½Å±¾Ê§°Ü\n" + e);
+            }
+            if (File.Exists(dbFilePath))
+            {
+                File.Delete(dbFilePath);
             }
             using (var conn = new SQLiteConnection(dbFilePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
             {
@@ -162,8 +186,8 @@ namespace DreamExcel.Core
                     SQLiteCommand sql = new SQLiteCommand(conn);
                     sql.CommandText = "PRAGMA synchronous = OFF";
                     sql.ExecuteNonQuery();
-                    //åˆ›å»ºå…³é”®Keyå†™å…¥è¡¨å¤´
-                    sb.Append("create table if not exists " + tableName + " (" + Key + " " + FullTypeSqliteMapping[keyType] + " PRIMARY KEY autoincrement, ");
+                    //´´½¨¹Ø¼üKeyĞ´Èë±íÍ·
+                    sb.Append("create table if not exists " + tableName + " (" + Key + " " + FullTypeSqliteMapping[keyType] + " PRIMARY KEY not null, ");
                     for (int n = 0; n < table.Count; n++)
                     {
                         if (table[n].Name == Key)
@@ -172,23 +196,11 @@ namespace DreamExcel.Core
                         string sqliteType = t ? FullTypeSqliteMapping[table[n].Type] : "TEXT";
                         sb.Append(table[n].Name + " " + sqliteType + ",");
                     }
-                    sb.Remove(sb.Length - 1,1);
+                    sb.Remove(sb.Length - 1, 1);
                     sb.Append(")");
                     sql.CommandText = sb.ToString();
                     sql.ExecuteNonQuery();
-                    //è¡¨å¯èƒ½ä¹‹å‰åˆ›å»ºè¿‡äº†,ä½†æ˜¯è¡¨å¤´å¯èƒ½ç¼ºå°‘
-                    List<SQLiteConnection.ColumnInfo> tableColumns = conn.GetTableInfo(tableName);
-                    for (int n = 0; n < table.Count; n++)
-                    {
-                        if (!tableColumns.Exists(t1 => t1.Name == table[n].Name))
-                        {
-                            var t = FullTypeSqliteMapping.ContainsKey(table[n].Type);
-                            string sqliteType = t ? FullTypeSqliteMapping[table[n].Type] : "TEXT";
-                            sql.CommandText = "ALTER TABLE TestExcel  ADD COLUMN " + table[n].Name + " " + sqliteType;
-                            sql.ExecuteNonQuery();
-                        }
-                    }
-                    //å‡†å¤‡å†™å…¥è¡¨å†…å®¹
+                    //×¼±¸Ğ´Èë±íÄÚÈİ
                     sb.Clear();
                     conn.BeginTransaction();
                     object[] writeInfo = new object[columnCount];
@@ -202,24 +214,27 @@ namespace DreamExcel.Core
                                 string cell = Convert.ToString(cells[i, n]);
                                 if (table.Count >= n)
                                 {
-                                    if (FullTypeSqliteMapping.ContainsKey(property.Type)) //å¸¸è§„ç±»å‹å¯ä»¥ä½¿ç”¨è¿™ç§æ–¹æ³•ç›´æ¥è½¬æ¢
+                                    string sqliteType;
+                                    if (FullTypeSqliteMapping.TryGetValue(property.Type, out sqliteType)) //³£¹æÀàĞÍ¿ÉÒÔÊ¹ÓÃÕâÖÖ·½·¨Ö±½Ó×ª»»
                                     {
                                         var attr = TableAnalyzer.SplitData(cell);
                                         if (property.Type == "System.Boolean")
                                             writeInfo[n - 1] = attr[0].ToUpper() == "TRUE" ? 0 : 1;
-                                        else
+                                        else if (sqliteType != "TEXT")
                                             writeInfo[n - 1] = attr[0];
+                                        else
+                                            writeInfo[n - 1] = cell;
                                     }
                                     else
                                     {
-                                        //è‡ªå®šä¹‰ç±»å‹åºåˆ—åŒ–
+                                        //×Ô¶¨ÒåÀàĞÍĞòÁĞ»¯
                                         writeInfo[n - 1] = cell;
                                     }
                                 }
                             }
                             catch
                             {
-                                throw new Exception("å•å…ƒæ ¼:" + ((Range)usedRange.Cells[i,n]).Address + "å­˜åœ¨å¼‚å¸¸");
+                                throw new Exception("µ¥Ôª¸ñ:" + ((Range) usedRange.Cells[i, n]).Address + "´æÔÚÒì³£");
                             }
                         }
                         sb.Append("replace into " + fileName + " ");
@@ -241,13 +256,15 @@ namespace DreamExcel.Core
                     }
                     conn.Commit();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     MessageBox.Show(e.ToString());
+                }
+                finally
+                {
                     conn.Close();
                 }
             }
-
         }
 
         public void AutoOpen()

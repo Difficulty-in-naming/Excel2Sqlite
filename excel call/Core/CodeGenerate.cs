@@ -49,6 +49,14 @@ namespace DreamExcel.Core
                     g.SetReplace("Class", core.Class.Name);
                     g.SetReplace("Attribute", core.Class.Attribute);
                     g.SetReplace("KeyType", core.Class.Type);
+                    if (core.Class.Type == "System.String")
+                    {
+                        g.SetReplace("Search", "string.Format(\"SELECT * FROM " + core.Class.Name + " WHERE Id = '{0}'\",id)");
+                    }
+                    else
+                    {
+                        g.SetReplace("Search", "string.Format(\"SELECT * FROM " + core.Class.Name + " WHERE Id = {0}\",id)");
+                    }
                     var properties = core.Properties;
                     if (g.BeginGroup("Field"))
                     {
