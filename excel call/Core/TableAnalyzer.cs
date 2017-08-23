@@ -16,24 +16,27 @@ namespace DreamExcel.Core
             data = Regex.Replace(data, "\"\"", "\"");
             var count = 0;
             var stringData = data;
-            if (data.StartsWith("\""))
-                stringData = stringData.Remove(stringData.Length - 1, 1).Remove(0, 1);
+/*            if (data.StartsWith("\""))
+                stringData = stringData.Remove(stringData.Length - 1, 1).Remove(0, 1);*/
             var sb = new StringBuilder();
             var dataList = new List<string>();
             for (var i = 0; i < stringData.Length; i++)
             {
-                if (stringData[i] == '\"')
+                var c = stringData[i];
+                if (c == '\"')
                 {
                     count++;
                 }
-                else if (count % 2 == 0 && stringData[i] == ',')
+                else if (count % 2 == 0 && c == ',')
                 {
                     count = 0;
                     dataList.Add(sb.ToString());
                     sb = new StringBuilder();
                     continue;
                 }
-                sb.Append(stringData[i]);
+                else if (count == 0 && c == '\n')
+                    continue;
+                sb.Append(c);
                 if (i == stringData.Length - 1)
                     dataList.Add(sb.ToString());
             }

@@ -121,6 +121,7 @@ namespace DreamExcel.Core
             bool haveKey = false;
             string keyType = "";
             object[,] cells = usedRange.Value2;
+            List<int> passColumns = new List<int>(); //跳过列
             for (var index = 1; index < columnCount + 1; index++)
             {
                 //从1开始,第0行是策划用来写备注的地方第1行为程序使用的变量名,第2行为变量类型
@@ -129,6 +130,11 @@ namespace DreamExcel.Core
                 {
                     var cell = ((Range)usedRange.Cells[NameRow, index]).Address;
                     throw new ExcelException("单元格:" + cell + "名称不能为空");
+                }
+                if (t1.StartsWith("*"))
+                {
+                    passColumns.Add(index);
+                    continue;
                 }
                 string type = Convert.ToString(cells[TypeRow, index]);
                 if (TypeConverter.ContainsKey(type))
@@ -173,9 +179,16 @@ namespace DreamExcel.Core
             {
                 throw new ExcelException("生成脚本失败\n" + e);
             }
-            if (File.Exists(dbFilePath))
+            try
             {
-                File.Delete(dbFilePath);
+                if (File.Exists(dbFilePath))
+                {
+                    File.Delete(dbFilePath);
+                }
+            }
+            catch(Exception e)
+            {
+                throw new ExcelException("无法写入数据库至" + dbFilePath + "请检查是否有任何应用正在使用该文件");
             }
             using (var conn = new SQLiteConnection(dbFilePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
             {
@@ -206,11 +219,17 @@ namespace DreamExcel.Core
                     object[] writeInfo = new object[columnCount];
                     for (int i = StartLine; i <= rowCount; i++)
                     {
+                        int offset = 1;
                         for (var n = 1; n <= columnCount; n++)
                         {
                             try
                             {
-                                var property = table[n - 1];
+                                if (passColumns.Contains(n))
+                                {
+                                    offset++;
+                                    continue;
+                                }
+                                var property = table[n - offset];
                                 string cell = Convert.ToString(cells[i, n]);
                                 if (table.Count >= n)
                                 {
@@ -219,11 +238,11 @@ namespace DreamExcel.Core
                                     {
                                         var attr = TableAnalyzer.SplitData(cell);
                                         if (property.Type == "System.Boolean")
-                                            writeInfo[n - 1] = attr[0].ToUpper() == "TRUE" ? 0 : 1;
+                                            writeInfo[n - offset] = attr[0].ToUpper() == "TRUE" ? 0 : 1;
                                         else if (sqliteType != "TEXT")
-                                            writeInfo[n - 1] = attr[0];
+                                            writeInfo[n - offset] = attr[0];
                                         else
-                                            writeInfo[n - 1] = cell;
+                                            writeInfo[n - offset] = cell;
                                     }
                                     else
                                     {
