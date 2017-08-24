@@ -231,7 +231,7 @@ namespace DreamExcel.Core
                                 }
                                 var property = table[n - offset];
                                 string cell = Convert.ToString(cells[i, n]);
-                                if (table.Count >= n)
+                                if (table.Count > n - offset)
                                 {
                                     string sqliteType;
                                     if (FullTypeSqliteMapping.TryGetValue(property.Type, out sqliteType)) //常规类型可以使用这种方法直接转换
