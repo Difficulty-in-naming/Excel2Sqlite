@@ -8,10 +8,14 @@ namespace DreamExcel.Core
 {
     public static class CodeGenerate
     {
-        private static Action<Generate.Info, Generate> Defalut(List<GenerateConfigTemplate> customClass, GenerateConfigTemplate core)
+        private static Action<Generate.Info, Serializer> Defalut(List<GenerateConfigTemplate> customClass, GenerateConfigTemplate core)
         {
-            Action<Generate.Info, Generate> action = (info, g) =>
+            Action<Generate.Info, Serializer> action = (info, g) =>
             {
+                if(info.PlaceHolder == "Custom")
+                {
+                    g.Apply();
+                }
                 if (info.PlaceHolder == "CustomClass")
                 {
                     for (var i = 0; i < customClass.Count; i++)
@@ -90,7 +94,7 @@ namespace DreamExcel.Core
             return action;
         }
 
-        public static string Start(Action<Generate.Info, Generate> action,string fileName)
+        public static string Start(Action<Generate.Info, Serializer> action,string fileName)
         {
             var path = Config.Instance.ScriptTemplatePath;
             string g = new Generate(path, action).StartWrite();

@@ -45,7 +45,7 @@ namespace DreamExcel.Core
 
         public static bool CheckType(string str)
         {
-            return WorkBookCore.FullTypeSqliteMapping.ContainsKey(str);
+            return WorkBookCore.SupportType.Contains(str);
 
         }
 
@@ -68,7 +68,7 @@ namespace DreamExcel.Core
                 {
                     type = type.Remove(0, 1);
                 }
-                if (CheckType(type))
+                if (!CheckType(type))
                 {
                     throw new ExcelException("表名:" + name + "中的类型定义有误,不能使用int,int[],string,string[],bool,bool[],float,float[]以外的类型" +
                                              "\n如果需要定义扩展类型请使用这种格式:Name[string];Id[int]" +

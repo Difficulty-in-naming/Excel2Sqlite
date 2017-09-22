@@ -68,6 +68,7 @@
     <Compile Include="Core\TableStruct.cs" />
     <Compile Include="Core\Utility.cs" />
     <Compile Include="Core\WorkBookCore.cs" />
+    <Compile Include="Core\WorkBookHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

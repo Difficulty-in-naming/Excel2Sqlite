@@ -34,78 +34,29 @@ namespace DreamExcel.Core
         /// 名称的所在行
         /// </summary>
         public const int NameRow = 2;
-        internal static Dictionary<string, string> TypeConverter = new Dictionary<string, string>
+
+        public static HashSet<string> SupportType = new HashSet<string>
         {
-            {"int", "System.Int32"},
-            {"string", "System.String"},
-            {"bool", "System.Boolean"},
-            {"float", "System.Single"},
-            {"long", "System.Int64"},
-            {"int[]", "System.Int32[]"},
-            {"long[]", "System.Int64[]"},
-            {"bool[]", "System.Boolean[]"},
-            {"string[]", "System.String[]"},
-            {"float[]", "System.Single[]"}
+            "int","string","bool","long","float","int[]","string[]","long[]","bool[]","float[]"
         };
 
-        internal static Dictionary<string, Func<string[], object>> ValueConverter = new Dictionary<string, Func<string[], object>>
-        {
-            {"System.Int32", str => str.Length > 0 ? Convert.ToInt32(str[0]) : 0},
-            {"System.String", str => str.Length > 0 ? str[0] : ""},
-            {"System.Boolean", str => str.Length > 0 && Convert.ToBoolean(str[0])},
-            {"System.Single", str => str.Length > 0 ? Convert.ToSingle(str[0]) : 0},
-            {"System.Int64", str => str.Length > 0 ? Convert.ToInt64(str[0]) : 0},
-            {"System.Int32[]", str => str.Length > 0 ? Array.ConvertAll(str, int.Parse) : new int[0]},
-            {"System.Int64[]", str => str.Length > 0 ? Array.ConvertAll(str, long.Parse) : new long[0]},
-            {"System.Boolean[]", str => str.Length > 0 ? Array.ConvertAll(str, bool.Parse) : new bool[0]},
-            {"System.String[]", str => str.Length > 0 ? str : new string[0]},
-            {"System.Single[]", str => str.Length > 0 ? Array.ConvertAll(str, float.Parse) : new float[0]}
-        };
-
-        internal static Dictionary<string, string> SqliteMapping = new Dictionary<string, string>
+        internal static Dictionary<string, string> FullTypeSqliteMapping = new Dictionary<string, string>
         {
             {"int","INTEGER" },
             {"string","TEXT" },
             {"float","REAL" },
             {"bool","INTEGER" },
-            {"int[]","TEXT" },
-            {"string[]","TEXT" },
-            {"float[]","TEXT" },
-            {"bool[]","TEXT" },
+            {"long","INTEGER" },
+            {"int[]","TEXT"},
+            {"string[]","TEXT"},
+            {"float[]","TEXT"},
+            {"bool[]","TEXT"},
+            {"long[]","TEXT"},
         };
-
-        internal static Dictionary<string, string> FullTypeSqliteMapping = new Dictionary<string, string>
-        {
-            {"System.Int32","INTEGER" },
-            {"System.String","TEXT" },
-            {"System.Single","REAL" },
-            {"System.Boolean","INTEGER" },
-            {"System.Int32[]","TEXT"},
-            {"System.Int64[]","TEXT"},
-            {"System.Boolean[]","TEXT"},
-            {"System.String[]","TEXT"},
-            {"System.Single[]","TEXT"}
-        };
-
-        public class Localization
-        {
-            /// <summary>
-            /// 通过唯一ID获取数据
-            /// </summary>
-            public System.String Id;
-
-            public System.String Chinese;
-            public System.String English;
-            public System.String Japanese;
-            public System.String Korean;
-            public System.String French;
-        }
 
         private void Workbook_BeforeSave(Workbook wb,bool b, ref bool r)
         {
-            var isSpWorkBook = Path.GetFileNameWithoutExtension(wb.Name).EndsWith(Config.Instance.FileSuffix);
-            if (!isSpWorkBook)
-                return;
+            if (wb.IsVaildWorkBook()) return;
             var activeSheet = (Worksheet) wb.ActiveSheet;
             var fileName = Path.GetFileNameWithoutExtension(wb.Name).Replace(Config.Instance.FileSuffix, "");
             var dbDirPath = Config.Instance.SaveDbPath;
@@ -137,13 +88,11 @@ namespace DreamExcel.Core
                     continue;
                 }
                 string type = Convert.ToString(cells[TypeRow, index]);
-                if (TypeConverter.ContainsKey(type))
-                    type = TypeConverter[type];
                 if (t1 == Key)
                 {
                     haveKey = true;
                     keyType = type;
-                    if (keyType!="System.Int32" && keyType != "System.String")
+                    if (keyType!="int" && keyType != "string")
                     {
                         throw new ExcelException("表ID的类型不支持,可使用的类型必须为 int,string");
                     }
@@ -162,7 +111,7 @@ namespace DreamExcel.Core
                 for (int i = 0; i < table.Count; i++)
                 {
                     var t = table[i];
-                    if (Type.GetType(table[i].Type) == null)
+                    if (!SupportType.Contains(t.Type))
                     {
                         var newCustomType = TableAnalyzer.GenerateCustomClass(t.Type, t.Name);
                         coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = newCustomType.Class.Name + (t.Type.StartsWith("{") ? "[]" : "")});
@@ -286,13 +235,29 @@ namespace DreamExcel.Core
             }
         }
 
+
         public void AutoOpen()
         {
+
+            App.WorkbookOpen += wb =>
+            {
+                for (int i = 0; i < Config.Instance.SupportCustomType.Length; i++)
+                {
+                    AddSupportType(Config.Instance.SupportCustomType[i]);
+                }
+            };
             App.WorkbookBeforeSave += Workbook_BeforeSave;
         }
 
         public void AutoClose()
         {
+        }
+
+        public void AddSupportType(string str)
+        {
+            var support = str.Split(':');
+            SupportType.Add(support[0]);
+            FullTypeSqliteMapping.Add(support[0],support[1]);
         }
     }
 }

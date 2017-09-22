@@ -1,11 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DreamExcel.Core
 {
     public class Config
     {
+        private string mSaveDbPath;
+
+        private string mSaveScriptPath;
+
         public static Config Instance
         {
             get
@@ -15,45 +20,28 @@ namespace DreamExcel.Core
                 var configPath = WorkBookCore.App.ActiveWorkbook.Path + "/Config.txt";
                 string content;
                 if (File.Exists(configPath))
-                {
                     content = File.ReadAllText(configPath);
-                }
                 else
-                {
                     content = File.ReadAllText(CurrentPath + "/Config.txt");
-                }
                 content = Regex.Replace(content, @"\/\*((?:[^*]|(?:\*(?=[^\/])))*)\*\/", "");
-                content = content.Replace("\n", "").Replace("\r","");
+                content = content.Replace("\n", "").Replace("\r", "");
                 var split = content.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < split.Length; i++)
-                {
+                for (var i = 0; i < split.Length; i++)
                     if (split[i].StartsWith(nameof(SaveScriptPath)))
-                    {
                         mInstance.SaveScriptPath = GetValue(split[i]);
-                    }
                     else if (split[i].StartsWith(nameof(SaveDbPath)))
-                    {
                         mInstance.SaveDbPath = GetValue(split[i]);
-                    }
                     else if (split[i].StartsWith(nameof(ScriptNameSpace)))
-                    {
                         mInstance.ScriptNameSpace = GetValue(split[i]);
-                    }
                     else if (split[i].StartsWith(nameof(FileSuffix)))
-                    {
                         mInstance.FileSuffix = GetValue(split[i]);
-                    }
-                }
+                else if (split[i].StartsWith("CustomType"))
+                        mInstance.SupportCustomType = Regex.Split(GetValue(split[i]), @"\{(.*?)\}").Where(s => s != string.Empty).ToArray(); ;
                 return mInstance;
             }
         }
 
-        private static string GetValue(string split)
-        {
-            return split.Substring(split.IndexOf("=") + 1).Trim();
-        }
-
-        private static string CurrentPath { get { return AppDomain.CurrentDomain.BaseDirectory; } }
+        private static string CurrentPath => AppDomain.CurrentDomain.BaseDirectory;
 
         public string ScriptTemplatePath
         {
@@ -61,25 +49,17 @@ namespace DreamExcel.Core
             {
                 var configPath = WorkBookCore.App.ActiveWorkbook.Path + "/GenerateTemplate.txt";
                 if (File.Exists(configPath))
-                {
                     return configPath;
-                }
-                else
-                {
-                    return CurrentPath + "/GenerateTemplate.txt";
-                }
+                return CurrentPath + "/GenerateTemplate.txt";
             }
         }
 
-        private string mSaveScriptPath;
         public string SaveScriptPath
         {
             get
             {
                 if (mSaveScriptPath.Contains(":")) //盘符标志
-                {
                     return mSaveScriptPath;
-                }
                 return WorkBookCore.App.ActiveWorkbook.Path + "\\" + mSaveScriptPath;
             }
             private set { mSaveScriptPath = value; }
@@ -87,19 +67,22 @@ namespace DreamExcel.Core
 
         public string ScriptNameSpace { get; private set; }
         public string FileSuffix { get; private set; }
-        private string mSaveDbPath;
 
         public string SaveDbPath
         {
             get
             {
                 if (mSaveDbPath.Contains(":")) //盘符标志
-                {
                     return mSaveDbPath;
-                }
                 return WorkBookCore.App.ActiveWorkbook.Path + "\\" + mSaveDbPath;
             }
             set { mSaveDbPath = value; }
         }
+
+        private static string GetValue(string split)
+        {
+            return split.Substring(split.IndexOf("=") + 1).Trim();
+        }
+        public string[] SupportCustomType { get; set; }
     }
 }

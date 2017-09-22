@@ -23,7 +23,7 @@ namespace DreamExcel.Core
                 sb.Append(customClass.Properties[i].Name);
                 sb.Append("\"");
                 sb.Append(":");
-                sb.Append(GetDefault(Type.GetType(WorkBookCore.TypeConverter[properties[i].Type])));
+                sb.Append(GetDefault(properties[i].Type));
                 if(i != properties.Count - 1)
                     sb.Append(",");
             }
@@ -32,17 +32,15 @@ namespace DreamExcel.Core
             return sb.ToString();
         }
 
-        private static string GetDefault(Type t)
+        private static string GetDefault(string str)
         {
-            if (t == typeof(string))
+            if (str == "int" || str == "float" || str == "long")
+                return "0";
+            else if (str == "string")
                 return "\"\"";
-            else if (t == typeof(int))
-                return "0";
-            else if (t == typeof(float))
-                return "0";
-            else if (t == typeof(bool))
+            else if (str == "bool")
                 return "true";
-            else if (t.IsArray)
+            else if (str.Contains("[]"))
                 return "[]";
             else
                 throw new Exception("不支持的类型");
