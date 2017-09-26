@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using DreamLib.Editor.Unity.Extensition;
 using ScriptGenerate;
 
@@ -26,13 +27,18 @@ namespace DreamExcel.Core
                                 {
                                     var kv = split[i].Split(new[] {":"}, StringSplitOptions.RemoveEmptyEntries);
                                     Utility.CheckCondition(()=>kv.Length > 1,"解析枚举出错");
-                                    g.SetReplace("Key", kv[1]);
-                                    g.SetReplace("Value", kv[0]);
-                                    g.Apply();
+                                    var match = Regex.Match(kv[1], @"\[(.*)\]");
+                                    if (match.Success)
+                                    {
+                                        g.SetReplace("Key", Regex.Match(kv[1], @"\[(.*)\]").Groups[1].Value);
+                                        g.SetReplace("Value", kv[0]);
+                                        g.Apply();
+                                    }
                                 }
                                 g.EndGroup();
                             }
                         }
+                        g.Apply();
                     }
                     g.Apply();
                 }

@@ -133,7 +133,11 @@ namespace DreamExcel.Core
             }
             catch (Exception e)
             {
-                throw new ExcelException("生成脚本失败\n" + e);
+                throw new ExcelException("生成脚本失败\n" +
+                                         "可能使用了不被支持的脚本类型\n" +
+                                         "当前仅支持int,int[],float,float[],bool,bool[],string,string[],long,long[]\n" +
+                                         "或者自定义类的使用方法错误\n" + 
+                                         e);
             }
             try
             {
