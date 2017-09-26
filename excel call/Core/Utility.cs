@@ -14,4 +14,13 @@ namespace DreamExcel.Core
             MessageBox.Show(str);
         }
     }
+
+    public class Utility
+    {
+        public static void CheckCondition(Func<bool> condition, string str)
+        {
+            if(!condition())
+                throw new ExcelException(str);
+        }
+    }
 }

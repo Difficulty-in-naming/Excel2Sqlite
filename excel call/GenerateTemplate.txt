@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 namespace SuperHero.Config
 {
-	[@Custom]
+	[@Enum]
 	{
-		
+		public enum {@Name}
+		{
+			[@Nested]{ {@Key} = {@Value}, }
+		}
 	}
 	[@CustomClass]
 	{

@@ -35,9 +35,9 @@ namespace DreamExcel.Core
         /// </summary>
         public const int NameRow = 2;
 
-        public static HashSet<string> SupportType = new HashSet<string>
+        internal static HashSet<string> SupportType = new HashSet<string>
         {
-            "int","string","bool","long","float","int[]","string[]","long[]","bool[]","float[]"
+            "int","string","bool","long","float","int[]","string[]","long[]","bool[]","float[]","enum",
         };
 
         internal static Dictionary<string, string> FullTypeSqliteMapping = new Dictionary<string, string>
@@ -52,6 +52,7 @@ namespace DreamExcel.Core
             {"float[]","TEXT"},
             {"bool[]","TEXT"},
             {"long[]","TEXT"},
+            {"enum","INTEGER" }
         };
 
         private void Workbook_BeforeSave(Workbook wb,bool b, ref bool r)
@@ -119,7 +120,13 @@ namespace DreamExcel.Core
                     }
                     else
                     {
-                        coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type});
+                        var core = new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type};
+                        if (t.Type == "enum")
+                        {
+                            if (((Range) usedRange[TypeRow, i + 1]).Comment != null)
+                                core.Data = ((Range) usedRange[TypeRow, i + 1]).Comment.Text().Replace("\r", "").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+                        }
+                        coreClass.Add(core);
                     }
                 }
                 CodeGenerate.Start(customClass, coreClass, fileName);
@@ -238,14 +245,6 @@ namespace DreamExcel.Core
 
         public void AutoOpen()
         {
-
-            App.WorkbookOpen += wb =>
-            {
-                for (int i = 0; i < Config.Instance.SupportCustomType.Length; i++)
-                {
-                    AddSupportType(Config.Instance.SupportCustomType[i]);
-                }
-            };
             App.WorkbookBeforeSave += Workbook_BeforeSave;
         }
 

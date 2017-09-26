@@ -35,8 +35,6 @@ namespace DreamExcel.Core
                         mInstance.ScriptNameSpace = GetValue(split[i]);
                     else if (split[i].StartsWith(nameof(FileSuffix)))
                         mInstance.FileSuffix = GetValue(split[i]);
-                else if (split[i].StartsWith("CustomType"))
-                        mInstance.SupportCustomType = Regex.Split(GetValue(split[i]), @"\{(.*?)\}").Where(s => s != string.Empty).ToArray(); ;
                 return mInstance;
             }
         }
@@ -83,6 +81,5 @@ namespace DreamExcel.Core
         {
             return split.Substring(split.IndexOf("=") + 1).Trim();
         }
-        public string[] SupportCustomType { get; set; }
     }
 }

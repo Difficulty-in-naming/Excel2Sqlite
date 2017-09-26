@@ -12,8 +12,28 @@ namespace DreamExcel.Core
         {
             Action<Generate.Info, Serializer> action = (info, g) =>
             {
-                if(info.PlaceHolder == "Custom")
+                if (info.PlaceHolder == "Enum")
                 {
+                    foreach (var node in core.Properties)
+                    {
+                        if (node.Type == "enum")
+                        {
+                            string[] split = (string[]) node.Data;
+                            g.SetReplace("Name", node.Name);
+                            if (g.BeginGroup("Nested"))
+                            {
+                                for (int i = 0; i < split.Length; i++)
+                                {
+                                    var kv = split[i].Split(new[] {":"}, StringSplitOptions.RemoveEmptyEntries);
+                                    Utility.CheckCondition(()=>kv.Length > 1,"解析枚举出错");
+                                    g.SetReplace("Key", kv[1]);
+                                    g.SetReplace("Value", kv[0]);
+                                    g.Apply();
+                                }
+                                g.EndGroup();
+                            }
+                        }
+                    }
                     g.Apply();
                 }
                 if (info.PlaceHolder == "CustomClass")
@@ -29,7 +49,12 @@ namespace DreamExcel.Core
                             for (var j = 0; j < properties.Count; j++)
                             {
                                 g.SetReplace("Name", properties[j].Name);
-                                g.SetReplace("Type", properties[j].Type);
+                                if (properties[j].Type == "enum")
+                                {
+                                    g.SetReplace("Type", properties[j].Name);
+                                }
+                                else
+                                    g.SetReplace("Type", properties[j].Type);
                                 g.Apply();
                             }
                             g.EndGroup();
@@ -40,7 +65,12 @@ namespace DreamExcel.Core
                             for (var j = 0; j < properties.Count; j++)
                             {
                                 g.SetReplace("Name", properties[j].Name);
-                                g.SetReplace("Type", properties[j].Type);
+                                if (properties[j].Type == "enum")
+                                {
+                                    g.SetReplace("Type", properties[j].Name);
+                                }
+                                else
+                                    g.SetReplace("Type", properties[j].Type);
                                 g.Apply();
                             }
                             g.EndGroup();
@@ -67,7 +97,12 @@ namespace DreamExcel.Core
                         for (var i = 0; i < properties.Count; i++)
                         {
                             g.SetReplace("Name", properties[i].Name);
-                            g.SetReplace("Type", properties[i].Type);
+                            if (properties[i].Type == "enum")
+                            {
+                                g.SetReplace("Type", properties[i].Name);
+                            }
+                            else
+                                g.SetReplace("Type", properties[i].Type);
                             g.Apply();
                         }
                         g.EndGroup();
@@ -78,7 +113,12 @@ namespace DreamExcel.Core
                         for (var i = 0; i < properties.Count; i++)
                         {
                             g.SetReplace("Name", properties[i].Name);
-                            g.SetReplace("Type", properties[i].Type);
+                            if (properties[i].Type == "enum")
+                            {
+                                g.SetReplace("Type", properties[i].Name);
+                            }
+                            else
+                                g.SetReplace("Type", properties[i].Type);
                             g.Apply();
                         }
                         g.EndGroup();

@@ -6,5 +6,3 @@ SaveDbPath =,
 ScriptNameSpace = SuperHero.Config,
 /*文件后缀名带有该后缀名的可以享有该插件的所有能力*/
 FileSuffix = _Auto,
-/*自定义类型*/
-CustomType = {enum:INTEGER}{xxx:TEXT}
