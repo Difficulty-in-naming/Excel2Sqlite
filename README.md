@@ -13,8 +13,8 @@ Features
 
 Environment
 ===
-- 请使用32位的Excel软件
-- 使用VS2015或2017进行编译
+- 请使用Excel 2003以上的版本
+- 使用VS2013/VS2015/2017进行编译
 
 Get Started
 ===
