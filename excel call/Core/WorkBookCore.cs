@@ -197,8 +197,8 @@ namespace DreamExcel.Core
                                     if (FullTypeSqliteMapping.TryGetValue(property.Type, out sqliteType)) //常规类型可以使用这种方法直接转换
                                     {
                                         var attr = TableAnalyzer.SplitData(cell);
-                                        if (property.Type == "System.Boolean")
-                                            writeInfo[n - offset] = attr[0].ToUpper() == "TRUE" ? 0 : 1;
+                                        if (property.Type == "bool")
+                                            writeInfo[n - offset] = attr[0].ToUpper() == "TRUE" ? 1 : 0;
                                         else if (sqliteType != "TEXT")
                                             writeInfo[n - offset] = attr[0];
                                         else

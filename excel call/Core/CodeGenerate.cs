@@ -13,35 +13,6 @@ namespace DreamExcel.Core
         {
             Action<Generate.Info, Serializer> action = (info, g) =>
             {
-                if (info.PlaceHolder == "Enum")
-                {
-                    foreach (var node in core.Properties)
-                    {
-                        if (node.Type == "enum")
-                        {
-                            string[] split = (string[]) node.Data;
-                            g.SetReplace("Name", node.Name);
-                            if (g.BeginGroup("Nested"))
-                            {
-                                for (int i = 0; i < split.Length; i++)
-                                {
-                                    var kv = split[i].Split(new[] {":"}, StringSplitOptions.RemoveEmptyEntries);
-                                    Utility.CheckCondition(()=>kv.Length > 1,"解析枚举出错");
-                                    var match = Regex.Match(kv[1], @"\[(.*)\]");
-                                    if (match.Success)
-                                    {
-                                        g.SetReplace("Key", Regex.Match(kv[1], @"\[(.*)\]").Groups[1].Value);
-                                        g.SetReplace("Value", kv[0]);
-                                        g.Apply();
-                                    }
-                                }
-                                g.EndGroup();
-                            }
-                        }
-                        g.Apply();
-                    }
-                    g.Apply();
-                }
                 if (info.PlaceHolder == "CustomClass")
                 {
                     for (var i = 0; i < customClass.Count; i++)
@@ -55,12 +26,7 @@ namespace DreamExcel.Core
                             for (var j = 0; j < properties.Count; j++)
                             {
                                 g.SetReplace("Name", properties[j].Name);
-                                if (properties[j].Type == "enum")
-                                {
-                                    g.SetReplace("Type", properties[j].Name);
-                                }
-                                else
-                                    g.SetReplace("Type", properties[j].Type);
+                                g.SetReplace("Type", properties[j].Type);
                                 g.Apply();
                             }
                             g.EndGroup();
@@ -71,12 +37,7 @@ namespace DreamExcel.Core
                             for (var j = 0; j < properties.Count; j++)
                             {
                                 g.SetReplace("Name", properties[j].Name);
-                                if (properties[j].Type == "enum")
-                                {
-                                    g.SetReplace("Type", properties[j].Name);
-                                }
-                                else
-                                    g.SetReplace("Type", properties[j].Type);
+                                g.SetReplace("Type", properties[j].Type);
                                 g.Apply();
                             }
                             g.EndGroup();
@@ -89,7 +50,7 @@ namespace DreamExcel.Core
                     g.SetReplace("Class", core.Class.Name);
                     g.SetReplace("Attribute", core.Class.Attribute);
                     g.SetReplace("KeyType", core.Class.Type);
-                    if (core.Class.Type == "System.String")
+                    if (core.Class.Type == "string")
                     {
                         g.SetReplace("Search", "string.Format(\"SELECT * FROM " + core.Class.Name + " WHERE Id = '{0}'\",id)");
                     }
@@ -98,6 +59,37 @@ namespace DreamExcel.Core
                         g.SetReplace("Search", "string.Format(\"SELECT * FROM " + core.Class.Name + " WHERE Id = {0}\",id)");
                     }
                     var properties = core.Properties;
+
+                    if (g.BeginGroup("Enum"))
+                    {
+                        foreach (var node in core.Properties)
+                        {
+                            if (node.Type == "enum")
+                            {
+                                string[] split = (string[])node.Data;
+                                g.SetReplace("Name", node.Name + Config.Instance.EnumSuffix);
+                                if (g.BeginGroup("Nested"))
+                                {
+                                    for (int i = 0; i < split.Length; i++)
+                                    {
+                                        var kv = split[i].Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                                        Utility.CheckCondition(() => kv.Length > 1, "解析枚举出错");
+                                        var match = Regex.Match(kv[1], @"\[(.*)\]");
+                                        if (match.Success)
+                                        {
+                                            g.SetReplace("Key", Regex.Match(kv[1], @"\[(.*)\]").Groups[1].Value);
+                                            g.SetReplace("Value", kv[0]);
+                                            g.Apply();
+                                        }
+                                    }
+                                    g.EndGroup();
+                                }
+                            }
+                            g.Apply();
+                        }
+                        g.EndGroup();
+                    }
+
                     if (g.BeginGroup("Field"))
                     {
                         for (var i = 0; i < properties.Count; i++)
@@ -105,7 +97,7 @@ namespace DreamExcel.Core
                             g.SetReplace("Name", properties[i].Name);
                             if (properties[i].Type == "enum")
                             {
-                                g.SetReplace("Type", properties[i].Name);
+                                g.SetReplace("Type", properties[i].Name + Config.Instance.EnumSuffix);
                             }
                             else
                                 g.SetReplace("Type", properties[i].Type);
@@ -121,7 +113,7 @@ namespace DreamExcel.Core
                             g.SetReplace("Name", properties[i].Name);
                             if (properties[i].Type == "enum")
                             {
-                                g.SetReplace("Type", properties[i].Name);
+                                g.SetReplace("Type", properties[i].Name + Config.Instance.EnumSuffix);
                             }
                             else
                                 g.SetReplace("Type", properties[i].Type);

@@ -35,6 +35,9 @@ namespace DreamExcel.Core
                         mInstance.ScriptNameSpace = GetValue(split[i]);
                     else if (split[i].StartsWith(nameof(FileSuffix)))
                         mInstance.FileSuffix = GetValue(split[i]);
+                    else if (split[i].StartsWith(nameof(EnumSuffix)))
+                        mInstance.EnumSuffix = GetValue(split[i]);
+
                 return mInstance;
             }
         }
@@ -65,7 +68,7 @@ namespace DreamExcel.Core
 
         public string ScriptNameSpace { get; private set; }
         public string FileSuffix { get; private set; }
-
+        public string EnumSuffix { get; private set; }
         public string SaveDbPath
         {
             get

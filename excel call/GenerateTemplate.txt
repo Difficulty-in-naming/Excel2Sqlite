@@ -2,13 +2,6 @@ using System;
 using System.Collections.Generic;
 namespace SuperHero.Config
 {
-	[@Enum]
-	{
-		public enum {@Name}
-		{
-			[@Nested]{ {@Key} = {@Value}, }
-		}
-	}
 	[@CustomClass]
 	{
 		public class {@Class}
@@ -40,10 +33,19 @@ namespace SuperHero.Config
 				}
 			}
 
-			public static {@Class}Property Read({@KeyType} id)
-			{
-				return null;
-			}
+			//public static {@Class}Property Read({@KeyType} id)
+			//{
+			//	var config = {@Class}.Instance.Config;
+			//	int count = config.Count;
+			//	for(int i = 0; i < count; i++)
+			//	{
+			//		if(config[i].Id == id)
+			//		{
+			//			return config[i];
+			//		}
+			//	}
+			//	return null;
+			//}
 		}
 	}
 }

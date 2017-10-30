@@ -1,3 +1,0 @@
-﻿<DnaLibrary Name="First Add-In" RuntimeVersion="v4.0">
-  <ExternalLibrary Path="excel call.dll" />
-</DnaLibrary>
