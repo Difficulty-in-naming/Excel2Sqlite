@@ -22,6 +22,7 @@ Get Started
 - 手动添加克隆项目下的ScriptGenerate.dll引用
 - 编译脚本
 - 打开生成目录下的TestExcel_Auto.xlsx或者新建一个Excel文件
+- 复制sqlite3.dll到Windows目录下(因为sqlite3.dll是动态链接库,add-in没办法找到他),sqlite可以到www.sqlite.org上面进行下载
 - 按下快捷键Alt+t,i打开面板选择浏览加入生成目录下的两个.xll文件
 - 开始愉快的使用吧
 
@@ -72,8 +73,11 @@ How To Use
 3:属性石[Rune]   
 方括号内为导出枚举的变量名称
 
+导出不同的脚本类型
+===
+你可以下载源代码然后在DreamExcel程序集中建立一个脚本,脚本内包含public static Action<Generate.Info, Serializer> Defalut(List<GenerateConfigTemplate> customClass, GenerateConfigTemplate core)这样的方法,且标记有[UseGenerate]标记后就可以了
+
 正在计划
 ===
 - 使用字节流导出sqlite
-- 前后端导出不同的数据
 - 提供多种编程语言导出模式
