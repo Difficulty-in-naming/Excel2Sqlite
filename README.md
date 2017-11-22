@@ -22,7 +22,7 @@ Get Started
 - 手动添加克隆项目下的ScriptGenerate.dll引用
 - 编译脚本
 - 打开生成目录下的TestExcel_Auto.xlsx或者新建一个Excel文件
-- 复制sqlite3.dll到Windows目录下(因为sqlite3.dll是动态链接库,add-in没办法找到他),sqlite可以到www.sqlite.org上面进行下载
+- 如果提示找不到sqlite3.dll的话,请复制sqlite3.dll到Windows目录下(因为sqlite3.dll是动态链接库,add-in没办法找到他)或者Excel运行目录下,sqlite可以到www.sqlite.org上面进行下载
 - 按下快捷键Alt+t,i打开面板选择浏览加入生成目录下的两个.xll文件
 - 开始愉快的使用吧
 
