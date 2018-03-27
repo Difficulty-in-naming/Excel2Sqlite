@@ -37,6 +37,8 @@ namespace DreamExcel.Core
                         mInstance.FileSuffix = GetValue(split[i]);
                     else if (split[i].StartsWith(nameof(EnumSuffix)))
                         mInstance.EnumSuffix = GetValue(split[i]);
+                    else if (split[i].StartsWith(nameof(GeneratorType)))
+                        mInstance.GeneratorType = GetValue(split[i]);
 
                 return mInstance;
             }
@@ -65,7 +67,7 @@ namespace DreamExcel.Core
             }
             private set { mSaveScriptPath = value; }
         }
-
+        public string GeneratorType { get; private set; } 
         public string ScriptNameSpace { get; private set; }
         public string FileSuffix { get; private set; }
         public string EnumSuffix { get; private set; }

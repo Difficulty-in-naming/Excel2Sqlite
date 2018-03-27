@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows.Forms;
 using ExcelDna.Integration;
 using Microsoft.Office.Interop.Excel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ScriptGenerate;
 using SQLite4Unity3d;
 using Application = Microsoft.Office.Interop.Excel.Application;
@@ -14,24 +16,24 @@ namespace DreamExcel.Core
     public class WorkBookCore: IExcelAddIn
     {
         /// <summary>
-        /// °ó¶¨
+        /// ç»‘å®š
         /// </summary>
         public static Application App = (Application)ExcelDnaUtil.Application;
         /// <summary>
-        /// µÚXĞĞ¿ªÊ¼²ÅÊÇÕıÊ½Êı¾İ
+        /// ç¬¬Xè¡Œå¼€å§‹æ‰æ˜¯æ­£å¼æ•°æ®
         /// </summary>
         private const int StartLine = 4;
         /// <summary>
-        ///     ¹Ø¼üKeyÖµ,Õâ¸öÖµÔÚExcel±íÀïÃæ±ØĞë´æÔÚ
+        ///     å…³é”®Keyå€¼,è¿™ä¸ªå€¼åœ¨Excelè¡¨é‡Œé¢å¿…é¡»å­˜åœ¨
         /// </summary>
         private const string Key = "Id";
 
         /// <summary>
-        /// ÀàĞÍµÄËùÔÚĞĞ
+        /// ç±»å‹çš„æ‰€åœ¨è¡Œ
         /// </summary>
         public const int TypeRow = 3;
         /// <summary>
-        /// Ãû³ÆµÄËùÔÚĞĞ
+        /// åç§°çš„æ‰€åœ¨è¡Œ
         /// </summary>
         public const int NameRow = 2;
 
@@ -61,7 +63,7 @@ namespace DreamExcel.Core
             var activeSheet = (Worksheet) wb.ActiveSheet;
             var fileName = Path.GetFileNameWithoutExtension(wb.Name).Replace(Config.Instance.FileSuffix, "");
             var dbDirPath = Config.Instance.SaveDbPath;
-            var dbFilePath = dbDirPath + fileName + ".db";
+            var dbFilePath = dbDirPath + fileName;
             if (!Directory.Exists(dbDirPath))
             {
                 Directory.CreateDirectory(dbDirPath);
@@ -72,16 +74,17 @@ namespace DreamExcel.Core
             List<TableStruct> table = new List<TableStruct>();
             bool haveKey = false;
             string keyType = "";
+            int keyIndex = -1;
             object[,] cells = usedRange.Value2;
-            List<int> passColumns = new List<int>(); //Ìø¹ıÁĞ
+            List<int> passColumns = new List<int>(); //è·³è¿‡åˆ—
             for (var index = 1; index < columnCount + 1; index++)
             {
-                //´Ó1¿ªÊ¼,µÚ0ĞĞÊÇ²ß»®ÓÃÀ´Ğ´±¸×¢µÄµØ·½µÚ1ĞĞÎª³ÌĞòÊ¹ÓÃµÄ±äÁ¿Ãû,µÚ2ĞĞÎª±äÁ¿ÀàĞÍ
+                //ä»1å¼€å§‹,ç¬¬0è¡Œæ˜¯ç­–åˆ’ç”¨æ¥å†™å¤‡æ³¨çš„åœ°æ–¹ç¬¬1è¡Œä¸ºç¨‹åºä½¿ç”¨çš„å˜é‡å,ç¬¬2è¡Œä¸ºå˜é‡ç±»å‹
                 string t1 = Convert.ToString(cells[NameRow, index]);
                 if (string.IsNullOrWhiteSpace(t1))
                 {
                     var cell = ((Range)usedRange.Cells[NameRow, index]).Address;
-                    throw new ExcelException("µ¥Ôª¸ñ:" + cell + "Ãû³Æ²»ÄÜÎª¿Õ");
+                    throw new ExcelException("å•å…ƒæ ¼:" + cell + "åç§°ä¸èƒ½ä¸ºç©º");
                 }
                 if (t1.StartsWith("*"))
                 {
@@ -95,18 +98,20 @@ namespace DreamExcel.Core
                     keyType = type;
                     if (keyType!="int" && keyType != "string")
                     {
-                        throw new ExcelException("±íIDµÄÀàĞÍ²»Ö§³Ö,¿ÉÊ¹ÓÃµÄÀàĞÍ±ØĞëÎª int,string");
+                        throw new ExcelException("è¡¨IDçš„ç±»å‹ä¸æ”¯æŒ,å¯ä½¿ç”¨çš„ç±»å‹å¿…é¡»ä¸º int,string");
                     }
+                    keyIndex = index;
                 }
                 table.Add(new TableStruct(t1, type));
             }
+
             if (!haveKey)
             {
-                throw new ExcelException("±í¸ñÖĞ²»´æÔÚ¹Ø¼üKey,ÄãĞèÒªĞÂÔöÒ»ÁĞ±äÁ¿ÃûÎª" + Key + "µÄ±äÁ¿×÷Îª¼üÖµ");
+                throw new ExcelException("è¡¨æ ¼ä¸­ä¸å­˜åœ¨å…³é”®Key,ä½ éœ€è¦æ–°å¢ä¸€åˆ—å˜é‡åä¸º" + Key + "çš„å˜é‡ä½œä¸ºé”®å€¼");
             }
             try
             {
-                //Éú³ÉC#½Å±¾
+                //ç”ŸæˆC#è„šæœ¬
                 var customClass = new List<GenerateConfigTemplate>();
                 var coreClass = new GenerateConfigTemplate {Class = new GenerateClassTemplate {Name = fileName, Type = keyType}};
                 for (int i = 0; i < table.Count; i++)
@@ -133,10 +138,10 @@ namespace DreamExcel.Core
             }
             catch (Exception e)
             {
-                throw new ExcelException("Éú³É½Å±¾Ê§°Ü\n" +
-                                         "¿ÉÄÜÊ¹ÓÃÁË²»±»Ö§³ÖµÄ½Å±¾ÀàĞÍ\n" +
-                                         "µ±Ç°½öÖ§³Öint,int[],float,float[],bool,bool[],string,string[],long,long[]\n" +
-                                         "»òÕß×Ô¶¨ÒåÀàµÄÊ¹ÓÃ·½·¨´íÎó\n" + 
+                throw new ExcelException("ç”Ÿæˆè„šæœ¬å¤±è´¥\n" +
+                                         "å¯èƒ½ä½¿ç”¨äº†ä¸è¢«æ”¯æŒçš„è„šæœ¬ç±»å‹\n" +
+                                         "å½“å‰ä»…æ”¯æŒint,int[],float,float[],bool,bool[],string,string[],long,long[]\n" +
+                                         "æˆ–è€…è‡ªå®šä¹‰ç±»çš„ä½¿ç”¨æ–¹æ³•é”™è¯¯\n" + 
                                          e);
             }
             try
@@ -146,11 +151,54 @@ namespace DreamExcel.Core
                     File.Delete(dbFilePath);
                 }
             }
-            catch(Exception e)
+            catch
             {
-                throw new ExcelException("ÎŞ·¨Ğ´ÈëÊı¾İ¿âÖÁ" + dbFilePath + "Çë¼ì²éÊÇ·ñÓĞÈÎºÎÓ¦ÓÃÕıÔÚÊ¹ÓÃ¸ÃÎÄ¼ş");
+                throw new ExcelException("æ— æ³•å†™å…¥æ•°æ®åº“è‡³" + dbFilePath + "è¯·æ£€æŸ¥æ˜¯å¦æœ‰ä»»ä½•åº”ç”¨æ­£åœ¨ä½¿ç”¨è¯¥æ–‡ä»¶");
             }
-            using (var conn = new SQLiteConnection(dbFilePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
+
+            try
+            {
+                if (Config.Instance.GeneratorType == "DB")
+                {
+                    WriteDB(dbFilePath, fileName, keyType, table, columnCount, rowCount, passColumns, cells, usedRange);
+                }
+                else if (Config.Instance.GeneratorType == "Json")
+                {
+                    WriteJson(dbFilePath, fileName, table,keyIndex, columnCount, rowCount, passColumns, cells,
+                        usedRange);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ExcelException("å†™å…¥æ•°æ®åº“å¤±è´¥\n" + e);
+            }
+        }
+
+        private static void WriteJson(string dbFilePath, string fileName, List<TableStruct> table,int keyIndex,
+            int columnCount,
+            int rowCount, List<int> passColumns, object[,] cells, Range usedRange)
+        {
+            Dictionary<object,Dictionary<string,object>> item = new Dictionary<object,Dictionary<string,object>>();
+
+                for (int j = StartLine; j <= rowCount; j++)
+                {
+                    var dict = new Dictionary<string,object>();
+                    for(int i = 1; i<= columnCount;i++)
+                    {
+                        if (passColumns.Contains(i))
+                            continue;
+                        dict[(string)cells[NameRow,i]] = cells[j,i];
+                    }
+                    item[cells[j,keyIndex]] = dict;
+                }
+            string json = JsonConvert.SerializeObject(item);
+            File.WriteAllText(dbFilePath + ".json",json);
+        }
+        
+        private static void WriteDB(string dbFilePath, string fileName, string keyType, List<TableStruct> table, int columnCount,
+            int rowCount, List<int> passColumns, object[,] cells, Range usedRange)
+        {
+            using (var conn = new SQLiteConnection(dbFilePath + ".db", SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite))
             {
                 try
                 {
@@ -159,8 +207,9 @@ namespace DreamExcel.Core
                     SQLiteCommand sql = new SQLiteCommand(conn);
                     sql.CommandText = "PRAGMA synchronous = OFF";
                     sql.ExecuteNonQuery();
-                    //´´½¨¹Ø¼üKeyĞ´Èë±íÍ·
-                    sb.Append("create table if not exists " + tableName + " (" + Key + " " + FullTypeSqliteMapping[keyType] + " PRIMARY KEY not null, ");
+                    //åˆ›å»ºå…³é”®Keyå†™å…¥è¡¨å¤´
+                    sb.Append("create table if not exists " + tableName + " (" + Key + " " + FullTypeSqliteMapping[keyType] +
+                              " PRIMARY KEY not null, ");
                     for (int n = 0; n < table.Count; n++)
                     {
                         if (table[n].Name == Key)
@@ -169,11 +218,12 @@ namespace DreamExcel.Core
                         string sqliteType = t ? FullTypeSqliteMapping[table[n].Type] : "TEXT";
                         sb.Append(table[n].Name + " " + sqliteType + ",");
                     }
+
                     sb.Remove(sb.Length - 1, 1);
                     sb.Append(")");
                     sql.CommandText = sb.ToString();
                     sql.ExecuteNonQuery();
-                    //×¼±¸Ğ´Èë±íÄÚÈİ
+                    //å‡†å¤‡å†™å…¥è¡¨å†…å®¹
                     sb.Clear();
                     conn.BeginTransaction();
                     object[] writeInfo = new object[columnCount];
@@ -189,12 +239,13 @@ namespace DreamExcel.Core
                                     offset++;
                                     continue;
                                 }
+
                                 var property = table[n - offset];
                                 string cell = Convert.ToString(cells[i, n]);
                                 if (table.Count > n - offset)
                                 {
                                     string sqliteType;
-                                    if (FullTypeSqliteMapping.TryGetValue(property.Type, out sqliteType)) //³£¹æÀàĞÍ¿ÉÒÔÊ¹ÓÃÕâÖÖ·½·¨Ö±½Ó×ª»»
+                                    if (FullTypeSqliteMapping.TryGetValue(property.Type, out sqliteType)) //å¸¸è§„ç±»å‹å¯ä»¥ä½¿ç”¨è¿™ç§æ–¹æ³•ç›´æ¥è½¬æ¢
                                     {
                                         var attr = TableAnalyzer.SplitData(cell);
                                         if (property.Type == "bool")
@@ -206,33 +257,37 @@ namespace DreamExcel.Core
                                     }
                                     else
                                     {
-                                        //×Ô¶¨ÒåÀàĞÍĞòÁĞ»¯
+                                        //è‡ªå®šä¹‰ç±»å‹åºåˆ—åŒ–
                                         writeInfo[n - 1] = cell;
                                     }
                                 }
                             }
                             catch
                             {
-                                throw new Exception("µ¥Ôª¸ñ:" + ((Range) usedRange.Cells[i, n]).Address + "´æÔÚÒì³£");
+                                throw new Exception("å•å…ƒæ ¼:" + ((Range) usedRange.Cells[i, n]).Address + "å­˜åœ¨å¼‚å¸¸");
                             }
                         }
+
                         sb.Append("replace into " + fileName + " ");
                         sb.Append("(");
                         foreach (var node in table)
                         {
                             sb.Append(node.Name + ",");
                         }
+
                         sb.Remove(sb.Length - 1, 1);
                         sb.Append(") values (");
                         for (var index = 0; index < table.Count; index++)
                         {
                             sb.Append("?,");
                         }
+
                         sb.Remove(sb.Length - 1, 1);
                         sb.Append(")");
                         conn.CreateCommand(sb.ToString(), writeInfo).ExecuteNonQuery();
                         sb.Clear();
                     }
+
                     conn.Commit();
                 }
                 catch (Exception e)

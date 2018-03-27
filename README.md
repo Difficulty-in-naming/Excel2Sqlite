@@ -14,6 +14,11 @@ Features
 - 支持导出多种开发语言版本的代码
 - 自定义导出语言内容
 - 支持枚举,支持忽略导出(备注)
+- 允许导出各种格式的数据文件(目前支持Sqlite 和 Json)
+
+依赖库
+===
+- ScriptGenerate https://github.com/pk27602017/ScriptGenerate
 
 Environment
 ===
@@ -80,6 +85,10 @@ How To Use
 导出不同的脚本类型
 ===
 你可以下载源代码然后在DreamExcel程序集中建立一个脚本,脚本内包含public static Action<Generate.Info, Serializer> Defalut(List<GenerateConfigTemplate> customClass, GenerateConfigTemplate core)这样的方法,且标记有[UseGenerate]标记后就可以了
+
+导出各种类型的数据
+===
+在Config中修改GeneratorType的属性去生成不同的类型的数据文件
 
 正在计划
 ===

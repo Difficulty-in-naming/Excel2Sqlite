@@ -45,6 +45,9 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -110,7 +113,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="F:\MyProject\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj">
+    <ProjectReference Include="..\..\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj">
       <Project>{3f45d91b-6162-4431-b0da-7f3645ebae07}</Project>
       <Name>ScriptGenerate</Name>
     </ProjectReference>

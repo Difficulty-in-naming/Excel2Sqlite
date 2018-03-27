@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamExcel", "excel call\DreamExcel.csproj", "{84E99079-C450-4C56-A3FE-3880A52067BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamExcel", "Main\DreamExcel.csproj", "{84E99079-C450-4C56-A3FE-3880A52067BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptGenerate", "F:\MyProject\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj", "{3F45D91B-6162-4431-B0DA-7F3645EBAE07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptGenerate", "..\ScriptGenerate\ScriptGenerate\ScriptGenerate.csproj", "{3F45D91B-6162-4431-B0DA-7F3645EBAE07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
