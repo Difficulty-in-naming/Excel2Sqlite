@@ -18,7 +18,7 @@ Features
 
 依赖库
 ===
-- ScriptGenerate https://github.com/pk27602017/ScriptGenerate
+- ScriptGenerate https://github.com/GaLeGayGay/ScriptGenerate
 
 Environment
 ===
