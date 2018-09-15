@@ -11,7 +11,7 @@ namespace DreamExcel.Core
     {
         public static string Serialize(string type)
         {
-            var customClass = TableAnalyzer.GenerateCustomClass(type);
+            var customClass = TableAnalyzer.GenerateCustomClass(type).Item1;
             bool isArray = type.StartsWith("{") && type.EndsWith("}");
             StringBuilder sb = new StringBuilder();
             sb.Append(isArray ? "[" : "");

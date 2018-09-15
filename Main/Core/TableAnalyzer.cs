@@ -49,10 +49,12 @@ namespace DreamExcel.Core
 
         }
 
-        public static GenerateConfigTemplate GenerateCustomClass(string t,string n = "")
+        public static Tuple<GenerateConfigTemplate,List<TypeBuilder.FieldInfo>> GenerateCustomClass(string t,string n = "")
         {
             var split = t.TrimStart('{').TrimEnd('}').Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             var newCustomType = new GenerateConfigTemplate { Class = new GenerateClassTemplate { Name = n + "Data" } };
+            List<TypeBuilder.FieldInfo> Types = new List<TypeBuilder.FieldInfo>();
+            
             for (int j = 0; j < split.Length; j++)
             {
                 var content = split[j];
@@ -75,8 +77,9 @@ namespace DreamExcel.Core
                                              "\n如果需要定义扩展类型数组请使用这种格式:{Name[string];Id[int]}");
                 }
                 newCustomType.Add(new GeneratePropertiesTemplate { Name = name, Type = type });
+                Types.Add(new TypeBuilder.FieldInfo {Name = name, Type = TypeHelper.ConvertStringToType(type)});
             }
-            return newCustomType;
+            return new Tuple<GenerateConfigTemplate, List<TypeBuilder.FieldInfo>>(newCustomType,Types);
         }
     }
 }

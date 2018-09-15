@@ -84,8 +84,8 @@ namespace DreamExcel.Core
                                     }
                                     g.EndGroup();
                                 }
+                                g.Apply();
                             }
-                            g.Apply();
                         }
                         g.EndGroup();
                     }

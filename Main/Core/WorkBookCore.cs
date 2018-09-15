@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExcelDna.Integration;
 using Microsoft.Office.Interop.Excel;
@@ -64,14 +68,23 @@ namespace DreamExcel.Core
             var fileName = Path.GetFileNameWithoutExtension(wb.Name).Replace(Config.Instance.FileSuffix, "");
             var dbDirPath = Config.Instance.SaveDbPath;
             var dbFilePath = dbDirPath + fileName;
-            if (!Directory.Exists(dbDirPath))
+            try
             {
-                Directory.CreateDirectory(dbDirPath);
+                if (!Directory.Exists(dbDirPath))
+                {
+                    Directory.CreateDirectory(dbDirPath);
+                }
             }
+            catch(Exception e)
+            {
+                throw new ExcelException(e.Message);
+            }
+
             Range usedRange = activeSheet.UsedRange;
             var rowCount = usedRange.Rows.Count;
             var columnCount = usedRange.Columns.Count;
             List<TableStruct> table = new List<TableStruct>();
+            Type newType = null;
             bool haveKey = false;
             string keyType = "";
             int keyIndex = -1;
@@ -111,6 +124,7 @@ namespace DreamExcel.Core
             }
             try
             {
+                List<TypeBuilder.FieldInfo> NormalTypes = new List<TypeBuilder.FieldInfo>();
                 //生成C#脚本
                 var customClass = new List<GenerateConfigTemplate>();
                 var coreClass = new GenerateConfigTemplate {Class = new GenerateClassTemplate {Name = fileName, Type = keyType}};
@@ -119,21 +133,30 @@ namespace DreamExcel.Core
                     var t = table[i];
                     if (!SupportType.Contains(t.Type))
                     {
-                        var newCustomType = TableAnalyzer.GenerateCustomClass(t.Type, t.Name);
-                        coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = newCustomType.Class.Name + (t.Type.StartsWith("{") ? "[]" : "")});
+                        bool isArray = t.Type.StartsWith("{");
+                        var tuple = TableAnalyzer.GenerateCustomClass(t.Type, t.Name);
+                        var newCustomType = tuple.Item1; 
+                        coreClass.Add(new GeneratePropertiesTemplate {Name = t.Name, Type = newCustomType.Class.Name + (isArray ? "[]" : "")});
                         customClass.Add(newCustomType);
+                        if(!isArray)
+                            NormalTypes.Add(new TypeBuilder.FieldInfo{Name = t.Name,Type = TypeBuilder.CompileResultType(tuple.Item2,"internal_WorkBookCore_Generate_" + t.Name)});
+                        else
+                            NormalTypes.Add(new TypeBuilder.FieldInfo{Name = t.Name,Type = TypeBuilder.CompileResultType(tuple.Item2,"internal_WorkBookCore_Generate_" + t.Name).MakeArrayType()});
                     }
                     else
                     {
                         var core = new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type};
                         if (t.Type == "enum")
                         {
-                            if (((Range) usedRange[TypeRow, i + 1]).Comment != null)
-                                core.Data = ((Range) usedRange[TypeRow, i + 1]).Comment.Text().Replace("\r", "").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+                            Range x = ((Range) usedRange[TypeRow, i + 2]);
+                            if (x.Comment != null)
+                                core.Data = ((Range) usedRange[TypeRow, i + 2]).Comment.Text().Replace("\r", "").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
                         }
                         coreClass.Add(core);
+                        NormalTypes.Add(new TypeBuilder.FieldInfo{Name = t.Name,Type = TypeHelper.ConvertStringToType(t.Type)});
                     }
                 }
+                newType = TypeBuilder.CompileResultType(NormalTypes,"NewType");
                 CodeGenerate.Start(customClass, coreClass, fileName);
             }
             catch (Exception e)
@@ -164,7 +187,7 @@ namespace DreamExcel.Core
                 }
                 else if (Config.Instance.GeneratorType == "Json")
                 {
-                    WriteJson(dbFilePath, fileName, table,keyIndex, columnCount, rowCount, passColumns, cells,
+                    WriteJson(dbFilePath, fileName, newType,keyIndex, columnCount, rowCount, passColumns, cells,
                         usedRange);
                 }
             }
@@ -174,23 +197,58 @@ namespace DreamExcel.Core
             }
         }
 
-        private static void WriteJson(string dbFilePath, string fileName, List<TableStruct> table,int keyIndex,
+        private static void WriteJson(string dbFilePath, string fileName, Type instanceType,int keyIndex,
             int columnCount,
             int rowCount, List<int> passColumns, object[,] cells, Range usedRange)
         {
-            Dictionary<object,Dictionary<string,object>> item = new Dictionary<object,Dictionary<string,object>>();
-
-                for (int j = StartLine; j <= rowCount; j++)
+            Dictionary<object,object> item = new Dictionary<object,object>();
+            for (int j = StartLine; j <= rowCount; j++)
+            {
+                var instance = Activator.CreateInstance(instanceType);
+                
+                //验证数据有效性
+                if (cells[j, keyIndex] == null)
+                    continue;
+                
+                for(int i = 1; i<= columnCount;i++)
                 {
-                    var dict = new Dictionary<string,object>();
-                    for(int i = 1; i<= columnCount;i++)
+                    try
                     {
                         if (passColumns.Contains(i))
                             continue;
-                        dict[(string)cells[NameRow,i]] = cells[j,i];
+                        if (cells[j, i] == null)
+                            continue;
+                        var property = instanceType.GetProperty((string) cells[NameRow, i]);
+                        //表示内部生成的自定义类
+                        if (property.PropertyType.Name.StartsWith("internal_WorkBookCore_Generate_"))
+                        {
+                            property.SetValue(instance,
+                                              JsonConvert.DeserializeObject((string) cells[j, i],
+                                                                            property.PropertyType));
+                        }
+                        else if (property.PropertyType.IsArray)
+                        {
+                            string[] t1 = Convert.ToString(cells[j, i])
+                                .Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
+                            var t2 = Array.CreateInstance(property.PropertyType.GetElementType(), t1.Length);
+                            for (var index = 0; index < t1.Length; index++)
+                            {
+                                var node = t1[index];
+                                t2.SetValue(Convert.ChangeType(node, property.PropertyType.GetElementType()), index);
+                            }
+
+                            property.SetValue(instance, t2);
+                        }
+                        else
+                            property.SetValue(instance, Convert.ChangeType(cells[j, i], property.PropertyType));
                     }
-                    item[cells[j,keyIndex]] = dict;
+                    catch 
+                    {
+                        throw new ExcelException($"单元格: {((Range)usedRange.Cells[j, i]).Address} 存在异常");
+                    }
                 }
+                item[cells[j,keyIndex]] = instance;
+            }
             string json = JsonConvert.SerializeObject(item);
             File.WriteAllText(dbFilePath + ".json",json);
         }
@@ -305,6 +363,58 @@ namespace DreamExcel.Core
         public void AutoOpen()
         {
             App.WorkbookBeforeSave += Workbook_BeforeSave;
+            App.WorkbookActivate+= AppOnWorkbookActivate;
+            App.SheetChange += OnAppOnSheetChange;
+        }
+
+        private void AppOnWorkbookActivate(Workbook wb)
+        {
+            OnAppOnSheetChange(wb.ActiveSheet, null);
+        }
+
+        private void OnAppOnSheetChange(object sh, Range obj)
+        {
+            ((Worksheet) sh).SelectionChange -= OnSelectionChange;
+            ((Worksheet) sh).SelectionChange += OnSelectionChange;
+        }
+
+        private Range mLastCell = null;
+        
+        private void OnSelectionChange(Range target)
+        {
+            if (target.Count > 1) return;
+            try
+            {
+                if (mLastCell != null)
+                {
+                    mLastCell[1,1] = JsonPrettify(mLastCell.Text);
+                }
+                mLastCell = target[1, 1];
+                mLastCell[1,1] = JsonPrettify(mLastCell.Text,Formatting.Indented);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        public static string JsonPrettify(string json,Formatting formatting = Formatting.None)
+        {
+            try
+            {
+                using (var stringReader = new StringReader(json))
+                using (var stringWriter = new StringWriter())
+                {
+                    var jsonReader = new JsonTextReader(stringReader);
+                    var jsonWriter = new JsonTextWriter(stringWriter) {Formatting = formatting};
+                    jsonWriter.WriteToken(jsonReader);
+                    return stringWriter.ToString();
+                }
+            }
+            catch
+            {
+                return json;
+            }
         }
 
         public void AutoClose()
