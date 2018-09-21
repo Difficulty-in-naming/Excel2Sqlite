@@ -68,6 +68,8 @@
     <Compile Include="Core\SQLite.cs" />
     <Compile Include="Core\TableAnalyzer.cs" />
     <Compile Include="Core\TableStruct.cs" />
+    <Compile Include="Core\TypeGenerator.cs" />
+    <Compile Include="Core\TypeHelper.cs" />
     <Compile Include="Core\Utility.cs" />
     <Compile Include="Core\WorkBookCore.cs" />
     <Compile Include="Core\WorkBookHelper.cs" />
@@ -78,23 +80,23 @@
     <None Include="ExcelDna.IntelliSense.xll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SqliteGenerate64.dna">
+    <None Include="ExcelGenerator64.dna">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SqliteGenerate64.xll">
+    <None Include="ExcelGenerator64.xll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\ExcelDna.Build.props" />
     <None Include="TestExcel_Auto.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SqliteGenerate32.xll">
+    <None Include="ExcelGenerator32.xll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SqliteGenerate32.dna">
+    <None Include="ExcelGenerator32.dna">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

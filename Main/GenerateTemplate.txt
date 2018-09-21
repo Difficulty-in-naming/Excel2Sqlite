@@ -17,8 +17,16 @@ namespace SuperHero.Config
 			}
 		}
 	}
+
 	[@CoreClass]
 	{
+			[@Enum]
+	{
+		public enum {@Name}
+		{
+		    [@Nested]{{@Key} = {@Value},}
+		}
+	}
 		public class {@Class}Property
 		{
 			private static string Path = "ConfigAssets/{@Class}";

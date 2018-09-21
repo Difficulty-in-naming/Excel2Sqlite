@@ -216,35 +216,40 @@ namespace DreamExcel.Core
                     {
                         if (passColumns.Contains(i))
                             continue;
-                        if (cells[j, i] == null)
-                            continue;
+                        /*if (cells[j, i] == null)
+                            continue;*/
                         var property = instanceType.GetProperty((string) cells[NameRow, i]);
+                        string t1 = Convert.ToString(cells[j, i]);
                         //表示内部生成的自定义类
                         if (property.PropertyType.Name.StartsWith("internal_WorkBookCore_Generate_"))
                         {
-                            property.SetValue(instance,
-                                              JsonConvert.DeserializeObject((string) cells[j, i],
-                                                                            property.PropertyType));
+                            property.SetValue(instance, JsonConvert.DeserializeObject(t1, property.PropertyType));
                         }
                         else if (property.PropertyType.IsArray)
                         {
-                            string[] t1 = Convert.ToString(cells[j, i])
-                                .Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
-                            var t2 = Array.CreateInstance(property.PropertyType.GetElementType(), t1.Length);
-                            for (var index = 0; index < t1.Length; index++)
+                            var array = t1.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
+                            var t2 = Array.CreateInstance(property.PropertyType.GetElementType(), array.Length);
+                            for (var index = 0; index < array.Length; index++)
                             {
-                                var node = t1[index];
+                                var node = array[index];
                                 t2.SetValue(Convert.ChangeType(node, property.PropertyType.GetElementType()), index);
                             }
 
                             property.SetValue(instance, t2);
                         }
                         else
+                        {
+                            if (string.IsNullOrEmpty(t1))
+                            {
+                                if (property.PropertyType.IsValueType)
+                                    continue;
+                            }
                             property.SetValue(instance, Convert.ChangeType(cells[j, i], property.PropertyType));
+                        }
                     }
-                    catch 
+                    catch (Exception e)
                     {
-                        throw new ExcelException($"单元格: {((Range)usedRange.Cells[j, i]).Address} 存在异常");
+                        throw new ExcelException($"单元格: {((Range)usedRange.Cells[j, i]).Address} 存在异常\n\n\n" + e.ToString() );
                     }
                 }
                 item[cells[j,keyIndex]] = instance;
