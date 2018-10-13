@@ -1,10 +1,19 @@
+﻿/********************************
+  该脚本是自动生成的请勿手动修改
+*********************************/
 using System;
 using System.Collections.Generic;
-namespace SuperHero.Config
+using Newtonsoft.Json;
+using Config.ConfigCore;
+using DreamLib.Unity.Data;
+using UnityEngine;
+using UnityEngine.Networking;
+using System.IO;
+namespace EdgeWorld.Config
 {
 	[@CustomClass]
 	{
-		public class {@Class}
+		public partial class {@Class}
 		{
 		    [@NestedField]{private {@Type} m{@Name};}
 			[@NestedProperty]
@@ -17,23 +26,25 @@ namespace SuperHero.Config
 			}
 		}
 	}
-
 	[@CoreClass]
 	{
+		public partial class {@Class}Property : ConfigAssetManager<{@Class}>
+		{
+			private static string Path = "Config/{@Class}.json";
 			[@Enum]
-	{
-		public enum {@Name}
-		{
-		    [@Nested]{{@Key} = {@Value},}
-		}
-	}
-		public class {@Class}Property
-		{
-			private static string Path = "ConfigAssets/{@Class}";
-
+			{
+				public enum {@Name}
+				{
+					[@Nested]{ {@Key} = {@Value}, }
+				}
+			}
+			
 			[@Field]{private {@Type} m{@Name};}
 			[@Property]
 			{
+				/// <summary>
+				/// {@Comment}
+				/// </summary>
 				public {@Type} {@Name}
 				{
 					get{ return m{@Name}; }
@@ -41,19 +52,20 @@ namespace SuperHero.Config
 				}
 			}
 
-			//public static {@Class}Property Read({@KeyType} id)
-			//{
-			//	var config = {@Class}.Instance.Config;
-			//	int count = config.Count;
-			//	for(int i = 0; i < count; i++)
-			//	{
-			//		if(config[i].Id == id)
-			//		{
-			//			return config[i];
-			//		}
-			//	}
-			//	return null;
-			//}
+			public static {@Class}Property Read({@KeyType} id, bool throwException = true)
+			{
+				return ConfigAssetManager<{@Class}Property>.Read(id, throwException);
+			}
+
+			public static Dictionary<{@KeyType},{@Class}Property> ReadDict()
+			{
+				return ConfigAssetManager<{@Class}Property>.Read{@KeyType}Dict();
+			}
+
+			public static List<{@Class}Property> ReadList()
+			{
+				return ConfigAssetManager<{@Class}Property>.ReadList();
+			}
 		}
 	}
 }

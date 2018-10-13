@@ -1,4 +1,15 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003ACodeGenerate_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AConvertStringToBinary_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AExcelMethod_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AJsonGenerate_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003ASQLite_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003ATableAnalyzer_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003ATypeGenerator_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AUtility_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AWorkBookCore_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003ACore_002Ff_003AWorkBookHelper_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=84E99079_002DC450_002D4C56_002DA3FE_002D3880A52067BD_002Fd_003AProperties_002Ff_003AAssemblyInfo_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="F:\TestProject\excel call\packages\ExcelDna.IntelliSense.1.0.3\lib\net40\ExcelDna.IntelliSense.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

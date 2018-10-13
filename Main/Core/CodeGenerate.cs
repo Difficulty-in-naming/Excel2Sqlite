@@ -111,6 +111,7 @@ namespace DreamExcel.Core
                         for (var i = 0; i < properties.Count; i++)
                         {
                             g.SetReplace("Name", properties[i].Name);
+                            g.SetReplace("Comment", properties[i].Remark);
                             if (properties[i].Type == "enum")
                             {
                                 g.SetReplace("Type", properties[i].Name + Config.Instance.EnumSuffix);

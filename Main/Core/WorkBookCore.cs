@@ -37,10 +37,13 @@ namespace DreamExcel.Core
         /// </summary>
         public const int TypeRow = 3;
         /// <summary>
-        /// 名称的所在行
+        /// 变量名称的所在行
         /// </summary>
         public const int NameRow = 2;
-
+        /// <summary>
+        /// 注释名称的所在行
+        /// </summary>
+        public const int CommentRow = 1;
         internal static HashSet<string> SupportType = new HashSet<string>
         {
             "int","string","bool","long","float","int[]","string[]","long[]","bool[]","float[]","enum",
@@ -145,9 +148,10 @@ namespace DreamExcel.Core
                     }
                     else
                     {
-                        var core = new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type};
+                        var core = new GeneratePropertiesTemplate {Name = t.Name, Type = t.Type,Remark = ((Range)usedRange[CommentRow, i + 1]).Text};
                         if (t.Type == "enum")
                         {
+                            //不知道为什么无法获取到注释但是加2却可以了
                             Range x = ((Range) usedRange[TypeRow, i + 2]);
                             if (x.Comment != null)
                                 core.Data = ((Range) usedRange[TypeRow, i + 2]).Comment.Text().Replace("\r", "").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
