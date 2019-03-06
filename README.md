@@ -1,4 +1,4 @@
-**该库已经迁移至https://github.com/GaLeGayGay/DreamExcel.并停止维护**
+**该库已经迁移至https://github.com/GaLeGayGay/DreamExcel 并停止维护**
 
 # Excel2Sqlite
 
