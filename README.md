@@ -1,3 +1,5 @@
+**该库已经迁移至https://github.com/GaLeGayGay/DreamExcel.并停止维护**
+
 # Excel2Sqlite
 
 在Excel中生成出数据库文件和脚本文件,工作人员只需要像平常一样操作Excel,不需要点击任何按钮.
